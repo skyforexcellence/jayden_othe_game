@@ -10,9 +10,7 @@ This is a respiritory is built for sharing different kind of strategy of AIs of 
 
 ### How to Play?怎么开始游戏？
 Please click the website below:请点击下面链接开始游戏：
-
-https://ashzh.github.io/Othello-AI/main.html
-
+(https://skyforexcellence.github.io/jayden_othe_game/)
 
 ### AI list|AI列表
     *AI1(hard to win)：AI1（要想赢的话较为困难）
