@@ -8,46 +8,27 @@
 	<title> Jayden黑白棋人機博弈遊戲</title>
 <style type="text/css">
 body {
-	background: linear-gradient(135deg, #e8f5e8 0%, #dcedc8 50%, #b8e6b3 100%);
+	background: #f5f5dc;
 	font-family: "微软雅黑","黑体","Segoe UI",serif;
 	margin: 0;
 	padding: 0;
 	overflow-x: hidden;
-	animation: bgAnimation 15s ease-in-out infinite alternate;
-}
-
-@keyframes bgAnimation {
-	0% { background: linear-gradient(135deg, #e8f5e8 0%, #dcedc8 50%, #b8e6b3 100%); }
-	50% { background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e8 50%, #c8e6c9 100%); }
-	100% { background: linear-gradient(135deg, #dcedc8 0%, #c8e6c9 50%, #a8dadc 100%); }
 }
 #desk {
 	width: 750px;
 	margin: 0px auto;
-	background: rgba(255, 255, 255, 0.25);
-	border-radius: 30px;
+	background: #deb887;
+	border-radius: 8px;
 	padding: 20px;
-	backdrop-filter: blur(15px);
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1),
-	            0 5px 15px rgba(139, 195, 74, 0.2),
-	            0 2px 8px rgba(129, 199, 132, 0.15);
-	transform: rotateX(1deg);
-	animation: deskFloat 8s ease-in-out infinite;
-}
-
-@keyframes deskFloat {
-	0%, 100% { transform: rotateX(1deg) translateY(0px); }
-	50% { transform: rotateX(1deg) translateY(-3px); }
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 #title {
 	float: left;
 	width: 60px;
 	padding: 15px;
-	background: linear-gradient(135deg, #81c784, #66bb6a);
-	border-radius: 25px;
-	box-shadow: 0 6px 12px rgba(102, 187, 106, 0.3),
-	            inset 0 2px 4px rgba(255, 255, 255, 0.4);
+	background: #8b4513;
+	border-radius: 4px;
 }
 
 #console {
@@ -58,35 +39,22 @@ body {
 
 h1 {
 	margin: 10px 0px;
-	color: #2e7d32;
+	color: #fff;
 	font-size: 50px;
 	line-height: 60px;
 	font-weight: bold;
-	text-shadow: 0px 2px 8px rgba(46, 125, 50, 0.3),
-	             0px 1px 4px rgba(76, 175, 80, 0.4);
-	background: linear-gradient(45deg, #4caf50, #66bb6a);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
 }
 
 h1 span {
-	color: #81c784;
-	text-shadow: 0 2px 6px rgba(129, 199, 132, 0.5);
+	color: #fff;
 }
 
 h3 {
 	margin: 0px 20px;
-	color: #1b5e20;
+	color: #fff;
 	font-size: 18px;
 	line-height: 22px;
 	font-weight: bold;
-	text-shadow: 0px 1px 3px rgba(27, 94, 32, 0.2);
-	background: rgba(200, 230, 201, 0.8);
-	padding: 10px 15px;
-	border-radius: 20px;
-	transform: rotate(-1deg);
-	border: 2px solid #66bb6a;
 }
 
 .button {
@@ -96,57 +64,33 @@ h3 {
 	font-size: 22px;
 	line-height: 58px;
 	color: #fff;
-	background: linear-gradient(135deg, #66bb6a, #4caf50);
-	border: 3px solid #4caf50;
-	border-radius: 30px;
-	box-shadow: 0px 4px 0px #388e3c,
-	            0px 8px 15px rgba(76, 175, 80, 0.3),
-	            inset 0 2px 4px rgba(255, 255, 255, 0.4);
+	background: #8b4513;
+	border: 2px solid #654321;
+	border-radius: 4px;
 	text-align: center;
 	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-	transform: rotate(-1deg);
 	font-weight: bold;
-	text-shadow: 1px 1px 2px rgba(27, 94, 32, 0.3);
 }
 
 .button:hover {
-	background: linear-gradient(135deg, #81c784, #66bb6a);
-	border: 3px solid #66bb6a;
-	box-shadow: 0px 6px 0px #2e7d32,
-	            0px 12px 20px rgba(102, 187, 106, 0.4),
-	            inset 0 2px 6px rgba(255, 255, 255, 0.5);
-	transform: rotate(1deg) translateY(-2px);
+	background: #a0522d;
 }
 
 .button:active {
-	color: #fff;
-	background: linear-gradient(135deg, #4caf50, #388e3c);
-	border: 3px solid #388e3c;
-	box-shadow: 0px 2px 0px #2e7d32,
-	            0px 6px 12px rgba(46, 125, 50, 0.5),
-	            inset 0 2px 8px rgba(255, 255, 255, 0.2);
-	transform: rotate(0deg) translateY(1px);
+	background: #654321;
 }
 
 .cbox {
-	border: 3px solid transparent;
-	border-radius: 20px;
+	border: 2px solid #654321;
+	border-radius: 4px;
 	width: 100px;
 	height: 56px;
-	background: linear-gradient(135deg, #f1f8e9, #e8f5e8);
-	box-shadow: 0 3px 6px rgba(76, 175, 80, 0.2),
-	            inset 0 2px 4px rgba(255, 255, 255, 0.6);
-	transition: all 0.3s ease;
-	transform: rotate(1deg);
+	background: #d2691e;
 }
 
 .side {
-	border: 3px solid #4caf50;
-	background: linear-gradient(135deg, #a5d6a7, #81c784);
-	box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3),
-	            0 2px 4px rgba(129, 199, 132, 0.4);
-	transform: scale(1.05);
+	border: 2px solid #654321;
+	background: #a0522d;
 }
 
 .cbox span {
@@ -154,9 +98,7 @@ h3 {
 	font-size: 26px;
 	line-height: 54px;
 	font-weight: bold;
-	color: #2e7d32;
-	text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.9),
-	             0px 0px 6px rgba(76, 175, 80, 0.4);
+	color: #fff;
 	padding-right: 7px;
 }
 
@@ -171,49 +113,32 @@ h3 {
 	width: 522px;
 	height: 522px;
 	margin: 15px 7px;
-	border: 3px solid #4caf50;
-	background: linear-gradient(135deg, #c8e6c9, #a8dadc);
-	box-shadow: 0px 10px 20px rgba(76, 175, 80, 0.3),
-	            0px 5px 10px rgba(129, 199, 132, 0.2),
-	            inset 0 2px 4px rgba(255, 255, 255, 0.3);
-	-webkit-transform: perspective(800px) rotateX(0deg);
-	transform: perspective(800px) rotateX(0deg);
-	-webkit-transition: -webkit-transform 1s;
-	transition: transform 1s;
-	border-radius: 25px;
+	border: 2px solid #654321;
+	background: #cd853f;
 }
 
 #chessboard table {
-	background: linear-gradient(135deg, #b8e6b3, #a8dadc);
+	background: #daa520;
 	border-spacing: 3px;
-	border: 20px solid #81c784;
-	border-radius: 20px;
-	box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
+	border: 20px solid #8b4513;
 }
 
 #chessboard td {
 	width: 54px;
 	height: 54px;
-	border: 2px solid #66bb6a;
-	border-radius: 10px;
-	transition: all 0.3s ease;
+	border: 1px solid #654321;
 }
 
 #chessboard td:hover {
-	border: 2px solid #4caf50;
-	background: rgba(76, 175, 80, 0.2);
-	transform: scale(1.05);
-	box-shadow: 0 4px 8px rgba(129, 199, 132, 0.3);
+	background: rgba(139, 69, 19, 0.2);
 }
 
 #chessboard .bg0 { 
-	background: linear-gradient(135deg, #e8f5e8, #dcedc8);
-	box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4);
+	background: #daa520;
 }
 
 #chessboard .bg1 { 
-	background: linear-gradient(135deg, #c8e6c9, #b8e6b3);
-	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+	background: #b8860b;
 }
 
 .black, .white {
@@ -222,78 +147,33 @@ h3 {
 	border-radius: 50%;
 	margin: 5px;
 	padding: 17px;
-	box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4),
-	            0px 2px 4px rgba(255, 255, 255, 0.3);
-	transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .fdd #chessboard {
 	-webkit-transform: perspective(800px) rotateX(35deg);
 	transform: perspective(800px) rotateX(35deg);
-	box-shadow: 0px 20px 0px #ff5722,
-	            0px 10px 25px rgba(255, 152, 0, 0.6);
 }
 
 .fdd td .black, .fdd td .white {
 	margin: 0px 5px 10px 5px;
-	box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.5);
 }
 
 .black {
-	background: radial-gradient(circle at 30% 30%, #383838, #1a1a1a);
-	border: 2px solid #2e2e2e;
-	-webkit-transform: rotateY(0deg);
-	transform: rotateY(0deg);
-	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+	background: #000;
+	border: 1px solid #333;
 }
 
 .white {
-	background: radial-gradient(circle at 30% 30%, #ffffff, #f5f5f5);
-	border: 2px solid #e0e0e0;
-	-webkit-transform: rotateY(180deg);
-	transform: rotateY(180deg);
-	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+	background: #fff;
+	border: 1px solid #ccc;
 }
 
 .reversal {
-	-webkit-transition: all 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-	transition: all 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-	animation: bounceIn 0.6s ease;
+	-webkit-transition: all 400ms ease;
+	transition: all 400ms ease;
 }
 
-@keyframes bounceIn {
-	0% { transform: scale(0) rotate(0deg); }
-	50% { transform: scale(1.2) rotate(180deg); }
-	100% { transform: scale(1) rotate(360deg); }
-}
 
-.newest:before, .reversal:before {
-	content: "";
-	display: block;
-	width: 12px;
-	height: 12px;
-	border-radius: 50%;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-}
-
-.newest:before {
-	background: radial-gradient(circle, #66bb6a, #4caf50);
-	box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
-	animation: pulse 1.5s ease infinite;
-}
-
-.reversal:before {
-	background: radial-gradient(circle, #81c784, #66bb6a);
-	box-shadow: 0 0 8px rgba(129, 199, 132, 0.6);
-}
-
-@keyframes pulse {
-	0%, 100% { transform: translate(-50%, -50%) scale(1); }
-	50% { transform: translate(-50%, -50%) scale(1.2); }
-}
 
 .prompt {
 	width: 16px;
@@ -301,22 +181,8 @@ h3 {
 	border-radius: 50%;
 	margin: 19px;
 	padding: 0px;
-	background: radial-gradient(circle, #a5d6a7, #81c784);
-	border: 2px solid #4caf50;
-	box-shadow: 0 3px 6px rgba(129, 199, 132, 0.4),
-	            0 0 10px rgba(76, 175, 80, 0.6);
-	animation: promptPulse 2s ease-in-out infinite;
-}
-
-@keyframes promptPulse {
-	0%, 100% { 
-		transform: scale(1);
-		box-shadow: 0 3px 6px rgba(129, 199, 132, 0.4), 0 0 10px rgba(76, 175, 80, 0.6);
-	}
-	50% { 
-		transform: scale(1.08);
-		box-shadow: 0 5px 10px rgba(129, 199, 132, 0.5), 0 0 15px rgba(76, 175, 80, 0.8);
-	}
+	background: #8b4513;
+	border: 1px solid #654321;
 }
 
 #selectbox {
@@ -326,43 +192,27 @@ h3 {
 	margin-left: -200px;
 	width: 400px;
 	height: auto;
-	background: linear-gradient(135deg, #f1f8e9, #e8f5e8);
-	border: 4px solid #66bb6a;
-	border-radius: 30px;
-	box-shadow: 0px 15px 35px rgba(76, 175, 80, 0.4),
-	            0px 8px 16px rgba(129, 199, 132, 0.3),
-	            inset 0 4px 8px rgba(255, 255, 255, 0.6);
+	background: #deb887;
+	border: 2px solid #8b4513;
+	border-radius: 4px;
 	padding: 25px 30px;
-	color: #1b5e20;
+	color: #000;
 	font-size: 22px;
 	line-height: 38px;
 	display: none;
-	transform: rotate(-1deg);
-	animation: selectboxBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-@keyframes selectboxBounce {
-	0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-	50% { transform: scale(1.05) rotate(-5deg); opacity: 1; }
-	100% { transform: scale(1) rotate(-1deg); opacity: 1; }
 }
 
 #selectbox input:checked + span {
-	color: #2e7d32;
-	text-shadow: 0px 0px 4px rgba(76, 175, 80, 0.4);
-	background: rgba(129, 199, 132, 0.3);
-	padding: 5px 12px;
-	border-radius: 15px;
+	color: #000;
 	font-weight: bold;
 }
 
 #aiSettings {
 	margin-left: 20px;
 	display: block;
-	background: rgba(200, 230, 201, 0.4);
+	background: #d2691e;
 	padding: 15px;
-	border-radius: 20px;
-	border: 2px solid #a5d6a7;
+	border: 1px solid #8b4513;
 }
 
 #buttons {
@@ -382,12 +232,10 @@ h3 {
 	color: #fff;
 	padding: 12px;
 	font-size: 15px;
-	background: linear-gradient(135deg, rgba(76, 175, 80, 0.8), rgba(102, 187, 106, 0.6));
-	border-radius: 20px;
+	background: #8b4513;
+	border-radius: 4px;
 	margin-top: 20px;
-	text-shadow: 0px 2px 4px rgba(27, 94, 32, 0.3);
 	font-weight: bold;
-	border: 2px solid #4caf50;
 }
 
 #pass, #airuning {
@@ -397,30 +245,21 @@ h3 {
 	margin-left: -150px;
 	width: 300px;
 	height: auto;
-	border-radius: 20px;
+	border-radius: 4px;
 	text-align: center;
 	font-size: 20px;
 	line-height: 30px;
-	background: linear-gradient(135deg, rgba(255, 152, 0, 0.95), rgba(255, 87, 34, 0.95));
+	background: #d2691e;
 	color: #fff;
-	text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
-	border: 3px solid #ff9800;
-	box-shadow: 0px 8px 16px rgba(255, 152, 0, 0.6),
-	            0px 4px 8px rgba(255, 87, 34, 0.4);
+	border: 1px solid #8b4513;
 	display: none;
-	animation: slideDown 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-@keyframes slideDown {
-	0% { transform: translateY(-50px); opacity: 0; }
-	100% { transform: translateY(0); opacity: 1; }
 }
 
 #airuning {
 	top: 500px;
 	margin-left: -100px;
 	width: 200px;
-	background: linear-gradient(135deg, rgba(255, 193, 7, 0.95), rgba(255, 152, 0, 0.95));
+	background: #cd853f;
 }
 
 @media screen and (max-width: 750px) {
@@ -454,25 +293,7 @@ h3 {
 		display: none;
 	}
 	
-	.position-score {
-		font-family: "Arial Rounded MT Bold", "微软雅黑", sans-serif;
-		font-weight: bold;
-		transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-		animation: scoreBounce 0.6s ease;
-		backdrop-filter: blur(5px);
-	}
-	
-	.position-score:hover {
-		transform: scale(1.3) rotate(10deg);
-		box-shadow: 0 8px 16px rgba(255, 87, 34, 0.8);
-		z-index: 200;
-	}
-	
-	@keyframes scoreBounce {
-		0% { opacity: 0; transform: scale(0) rotate(-180deg); }
-		50% { opacity: 1; transform: scale(1.2) rotate(10deg); }
-	100% { opacity: 1; transform: scale(1) rotate(0deg); }
-	}
+
 }
 </style>
 </head>
@@ -519,9 +340,9 @@ h3 {
 		</div>
 		<div id="pass"></div>
 		<div id="airuning">AI運算中……</div>
-		<div id="aiAnalysisPanel" style="position: absolute; top: 10px; right: 10px; width: 200px; background: linear-gradient(135deg, rgba(129, 199, 132, 0.98), rgba(76, 175, 80, 0.95)); border: 3px solid #66bb6a; border-radius: 20px; padding: 10px; color: #fff; font-size: 13px; display: none; z-index: 1000; box-shadow: 0px 8px 20px rgba(102, 187, 106, 0.4), 0px 4px 10px rgba(129, 199, 132, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.5);">
-			<div style="font-weight: bold; font-size: 16px; margin-bottom: 8px; text-align: center; cursor: move; background: rgba(200, 230, 201, 0.3); padding: 8px; border-radius: 15px; text-shadow: 0px 2px 4px rgba(27, 94, 32, 0.3);" onmousedown="startDrag(event, 'aiAnalysisPanel')">🎯 分析</div>
-			<div id="analysisContent" style="max-height: 280px; overflow-y: auto; font-size: 12px; background: rgba(255, 255, 255, 0.15); border-radius: 10px; padding: 8px;"></div>
+		<div id="aiAnalysisPanel" style="position: absolute; top: 10px; right: 10px; width: 200px; background: #deb887; border: 2px solid #8b4513; border-radius: 4px; padding: 10px; color: #000; font-size: 13px; display: none; z-index: 1000;">
+			<div style="font-weight: bold; font-size: 16px; margin-bottom: 8px; text-align: center; cursor: move; background: #d2691e; padding: 8px;" onmousedown="startDrag(event, 'aiAnalysisPanel')">分析</div>
+			<div id="analysisContent" style="max-height: 280px; overflow-y: auto; font-size: 12px; background: #cd853f; padding: 8px;"></div>
 		</div>
 		<div id="selectbox">
 			<label><input type="radio" name="gameMode" checked="checked"><span>人機對戰</span></label>
