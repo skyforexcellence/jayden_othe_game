@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 分析功能調試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .debug-info {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .error { border-left: 4px solid #d32f2f; }
+        .success { border-left: 4px solid #388e3c; }
+        .info { border-left: 4px solid #1976d2; }
+        button {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #1565c0; }
+    </style>
+</head>
+<body>
+    <h1>AI 分析功能調試測試</h1>
+    <div id="debug-results"></div>
+    
+    <div>
+        <button onclick="testAnalyzeBoard()">測試 AI 分析功能</button>
+        <button onclick="openMainPage()">打開主遊戲頁面</button>
+    </div>
+    
+    <script>
+        function addDebug(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `debug-info ${type}`;
+            div.innerHTML = message;
+            document.getElementById('debug-results').appendChild(div);
+        }
+        
+        function testAnalyzeBoard() {
+            addDebug('開始測試 AI 分析功能...', 'info');
+            
+            try {
+                // 測試棋盤狀態
+                const testBoard = new Array(64).fill(0);
+                // 設置初始棋盤
+                testBoard[27] = 1;   // 白棋
+                testBoard[28] = -1;  // 黑棋
+                testBoard[35] = -1;  // 黑棋
+                testBoard[36] = 1;   // 白棋
+                
+                // 創建測試用的棋局對象
+                const testMap = {
+                    data: testBoard,
+                    key: [0, 0],
+                    black: 2,
+                    white: 2,
+                    space: 60,
+                    side: 1, // 黑棋先手
+                    next: [],
+                    nextIndex: [],
+                    nextNum: 0,
+                    prevNum: 0,
+                    frontier: []
+                };
+                
+                addDebug('測試棋盤設置完成', 'success');
+                
+                // 檢查 AI6 是否存在
+                if (typeof AI6 === 'undefined') {
+                    addDebug('❌ AI6 類未定義', 'error');
+                    return;
+                }
+                
+                const ai6 = new AI6();
+                addDebug('✅ AI6 實例創建成功', 'success');
+                
+                // 檢查 analyzeBoard 方法
+                if (typeof ai6.analyzeBoard !== 'function') {
+                    addDebug('❌ analyzeBoard 方法不存在', 'error');
+                    return;
+                }
+                
+                addDebug('✅ analyzeBoard 方法存在', 'success');
+                
+                // 執行分析
+                const analysis = ai6.analyzeBoard(testMap, null);
+                
+                addDebug(`分析完成! 總分: ${analysis.totalScore}`, 'success');
+                addDebug(`可用位置數量: ${analysis.positions.length}`, 'info');
+                
+                // 顯示前5個最佳位置
+                for (let i = 0; i < Math.min(5, analysis.positions.length); i++) {
+                    const pos = analysis.positions[i];
+                    const row = Math.floor(pos.position / 8) + 1;
+                    const col = (pos.position % 8) + 1;
+                    addDebug(`位置 ${col},${row}: 分數 ${pos.score.toFixed(1)}, 翻轉 ${pos.reversals} 子`, 'info');
+                }
+                
+                addDebug('✅ AI 分析功能測試完成', 'success');
+                
+            } catch (error) {
+                addDebug(`❌ 測試過程中發生錯誤: ${error.message}`, 'error');
+                console.error('詳細錯誤:', error);
+            }
+        }
+        
+        function openMainPage() {
+            window.open('main.html', '_blank');
+        }
+        
+        // 頁面載入完成後自動檢查依賴
+        window.onload = function() {
+            addDebug('頁面載入完成，開始檢查依賴...', 'info');
+            
+            setTimeout(() => {
+                const requiredClasses = ['AI1', 'AI2', 'AI3', 'AI4', 'AI5', 'AI6', 'AI7', 'Chessboard', 'Othello'];
+                let allLoaded = true;
+                
+                for (const className of requiredClasses) {
+                    if (typeof window[className] === 'undefined') {
+                        addDebug(`❌ ${className} 未載入`, 'error');
+                        allLoaded = false;
+                    } else {
+                        addDebug(`✅ ${className} 已載入`, 'success');
+                    }
+                }
+                
+                if (allLoaded) {
+                    addDebug('✅ 所有依賴已載入，可以進行測試', 'success');
+                } else {
+                    addDebug('⚠️ 部分依賴未載入，可能影響功能', 'error');
+                }
+            }, 1000);
+        };
+    </script>
+    
+    <!-- 載入所有遊戲腳本 -->
+    <script src="AI1.js"></script>
+    <script src="AI2.js"></script>
+    <script src="AI3.js"></script>
+    <script src="AI4.js"></script>
+    <script src="AI5.js"></script>
+    <script src="AI6.js"></script>
+    <script src="AI7.js"></script>
+    <script src="ocjs.js"></script>
+</body>
+</html>

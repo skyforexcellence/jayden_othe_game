@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>簡單 AI 分析測試</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>簡單 AI 分析測試</h1>
+    <div id="results"></div>
+    <button onclick="testAI()">測試 AI 分析</button>
+    <button onclick="openMain()">打開主遊戲</button>
+    
+    <script src="AI6.js"></script>
+    <script>
+        function addResult(text, type) {
+            const div = document.createElement('div');
+            div.className = 'test-result ' + type;
+            div.textContent = text;
+            document.getElementById('results').appendChild(div);
+        }
+        
+        function testAI() {
+            try {
+                addResult('開始測試 AI6...', 'info');
+                
+                const ai6 = new AI6();
+                addResult('✅ AI6 實例創建成功', 'success');
+                
+                // 創建簡單的測試數據
+                const testMap = {
+                    data: new Array(64).fill(0),
+                    key: [0, 0],
+                    black: 2,
+                    white: 2,
+                    space: 60,
+                    side: 1,
+                    next: {
+                        19: [27],  // 模擬一個可能的移動
+                        26: [27],
+                        37: [28],
+                        44: [28]
+                    },
+                    nextIndex: [19, 26, 37, 44],
+                    nextNum: 4,
+                    prevNum: 4,
+                    frontier: []
+                };
+                
+                addResult('✅ 測試數據創建成功', 'success');
+                
+                // 測試 analyzeBoard
+                const analysis = ai6.analyzeBoard(testMap, null);
+                addResult('✅ analyzeBoard 執行完成', 'success');
+                
+                // 檢查結果
+                if (typeof analysis === 'object' && analysis !== null) {
+                    addResult('✅ 分析結果類型正確', 'success');
+                    addResult(`總分: ${analysis.totalScore} (類型: ${typeof analysis.totalScore})`, 'success');
+                    addResult(`位置數量: ${analysis.positions ? analysis.positions.length : 0}`, 'success');
+                    
+                    if (analysis.positions && analysis.positions.length > 0) {
+                        for (let i = 0; i < Math.min(3, analysis.positions.length); i++) {
+                            const pos = analysis.positions[i];
+                            const score = pos.score;
+                            addResult(`位置 ${pos.position}: 分數 ${score} (類型: ${typeof score}, NaN: ${isNaN(score)})`, 'success');
+                        }
+                    }
+                } else {
+                    addResult('❌ 分析結果格式錯誤', 'error');
+                }
+                
+            } catch (error) {
+                addResult(`❌ 測試失敗: ${error.message}`, 'error');
+                console.error('詳細錯誤:', error);
+            }
+        }
+        
+        function openMain() {
+            window.open('main.html', '_blank');
+        }
+    </script>
+</body>
+</html>

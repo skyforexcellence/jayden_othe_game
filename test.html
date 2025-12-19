@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>測試頁面 - 黑白棋遊戲</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>黑白棋遊戲 - 系統測試</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = message;
+            document.getElementById('test-results').appendChild(div);
+        }
+
+        // 測試 JavaScript 檔案載入
+        addResult('開始測試 JavaScript 檔案載入...', 'info');
+        
+        // 測試 AI 檔案
+        try {
+            const ai1 = new AI1();
+            addResult('✓ AI1.js 載入成功', 'success');
+        } catch (e) {
+            addResult('✗ AI1.js 載入失敗: ' + e.message, 'error');
+        }
+        
+        try {
+            const ai2 = new AI2();
+            addResult('✓ AI2.js 載入成功', 'success');
+        } catch (e) {
+            addResult('✗ AI2.js 載入失敗: ' + e.message, 'error');
+        }
+        
+        try {
+            const ai3 = new AI3();
+            addResult('✓ AI3.js 載入成功', 'success');
+        } catch (e) {
+            addResult('✗ AI3.js 載入失敗: ' + e.message, 'error');
+        }
+        
+        try {
+            const ai4 = new AI4();
+            addResult('✓ AI4.js 載入成功', 'success');
+        } catch (e) {
+            addResult('✗ AI4.js 載入失敗: ' + e.message, 'error');
+        }
+        
+        try {
+            const ai5 = new AI5();
+            addResult('✓ AI5.js 載入成功', 'success');
+        } catch (e) {
+            addResult('✗ AI5.js 載入失敗: ' + e.message, 'error');
+        }
+        
+        try {
+            const ai6 = new AI6();
+            addResult('✓ AI6.js 載入成功', 'success');
+        } catch (e) {
+            addResult('✗ AI6.js 載入失敗: ' + e.message, 'error');
+        }
+        
+        try {
+            const ai7 = new AI7();
+            addResult('✓ AI7.js 載入成功', 'success');
+        } catch (e) {
+            addResult('✗ AI7.js 載入失敗: ' + e.message, 'error');
+        }
+        
+        // 測試遊戲核心類
+        try {
+            setTimeout(() => {
+                try {
+                    const board = new Chessboard();
+                    addResult('✓ Chessboard 類載入成功', 'success');
+                } catch (e) {
+                    addResult('✗ Chessboard 類載入失敗: ' + e.message, 'error');
+                }
+                
+                try {
+                    const othe = new Othello();
+                    addResult('✓ Othello 類載入成功', 'success');
+                } catch (e) {
+                    addResult('✗ Othello 類載入失敗: ' + e.message, 'error');
+                }
+                
+                addResult('測試完成！', 'info');
+                
+                // 提供遊戲鏈接
+                setTimeout(() => {
+                    window.open('main.html', '_blank');
+                }, 1000);
+                
+            }, 500);
+        } catch (e) {
+            addResult('測試過程中出現錯誤: ' + e.message, 'error');
+        }
+    </script>
+    
+    <!-- 載入所有遊戲腳本 -->
+    <script src="AI1.js"></script>
+    <script src="AI2.js"></script>
+    <script src="AI3.js"></script>
+    <script src="AI4.js"></script>
+    <script src="AI5.js"></script>
+    <script src="AI6.js"></script>
+    <script src="AI7.js"></script>
+    <script src="ocjs.js"></script>
+</body>
+</html>
