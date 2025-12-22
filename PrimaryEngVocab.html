@@ -1,0 +1,3887 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>⭐ 英文生字比拼遊戲 ⭐</title>
+<style>
+  html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Comic Sans MS", sans-serif;
+    background: linear-gradient(180deg, #a8e0ff, #8ee3f5, #f9f9f9);
+    transition: background 1s ease;
+    position: relative;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0.3; transform: scale(1);}
+    50% { opacity: 1; transform: scale(1.3);}
+  }
+  .star {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #fffbd1;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #fff;
+    animation: twinkle 2.5s infinite;
+  }
+  #game-container {
+    width: 90%;
+    max-width: 1200px;
+    min-height: 600px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 25px;
+    box-shadow: 0 0 35px rgba(0, 150, 255, 0.6);
+    padding: 30px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+  h1, h2 {
+    color: #005bbb;
+    text-shadow: 0 0 8px #ffb347;
+    margin-bottom: 20px;
+  }
+  button {
+    background: linear-gradient(90deg, #ffd861, #ffb347);
+    color: #002244;
+    border: none;
+    border-radius: 16px;
+    padding: 15px 30px;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.3s ease;
+    margin: 10px;
+  }
+  button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #ffaa00;
+  }
+  button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .option {
+    display: block;
+    width: 90%;
+    margin: 20px auto;
+    font-size: 24px;
+  }
+  .hidden { display: none; }
+  #question {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 20px 0;
+    color: #002266;
+    min-height: 60px;
+  }
+  #result {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 22px;
+    color: #ff6600;
+    min-height: 40px;
+  }
+  #scoreboard {
+    margin-top: 15px;
+    font-size: 20px;
+    color: #0077cc;
+  }
+  .wrong-list-style {
+    background: rgba(255, 240, 240, 0.8);
+    border: 2px dashed #ff6666;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 90%;
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 18px;
+    line-height: 1.6;
+    color: #333;
+  }
+  .category-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin: 30px 0;
+  }
+  .category-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 3px solid #4CAF50;
+    border-radius: 15px;
+    padding: 20px;
+    width: 250px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  }
+  .category-card.selected {
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    color: white;
+    border-color: #388E3C;
+  }
+  .category-card h3 {
+    margin: 0 0 10px 0;
+    color: #2E7D32;
+  }
+  .category-card.selected h3 {
+    color: white;
+  }
+  .category-card p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+  }
+  .category-card.selected p {
+    color: rgba(255,255,255,0.9);
+  }
+  .category-checkbox {
+    display: none;
+  }
+  .selection-info {
+    background: #e3f2fd;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+    font-size: 18px;
+    color: #1565c0;
+  }
+  .category-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    background: #f5f5f5;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+  }
+  #category-screen {
+    text-align: center;
+  }
+  #selected-count {
+    font-weight: bold;
+    color: #d32f2f;
+    font-size: 1.2em;
+  }
+</style>
+</head>
+<body>
+  <div class="star" style="top:10%;left:15%;animation-delay:0s;"></div>
+  <div class="star" style="top:25%;left:55%;animation-delay:1s;"></div>
+  <div class="star" style="top:70%;left:35%;animation-delay:0.5s;"></div>
+  <div class="star" style="top:80%;left:80%;animation-delay:1.2s;"></div>
+  <div class="star" style="top:50%;left:10%;animation-delay:0.8s;"></div>
+  
+  <div id="game-container">
+    <!-- 開始畫面 -->
+    <div id="start-screen">
+      <h1>⭐ 英語生字皇遊戲 ⭐</h1>
+      <p style="font-size: 20px; color: #555; margin-bottom: 30px;">選擇您想要練習的單詞類別，開始挑戰！</p>
+      <button id="start-btn">開始選擇類別</button>
+    </div>
+    <!-- 分類選擇畫面 -->
+    <div id="category-screen" class="hidden">
+      <h2>🎯 選擇測驗類別</h2>
+      <p style="font-size: 18px; color: #666; margin-bottom: 20px;">請選擇至少一個類別（可多選），系統將從選擇的類別中隨機抽取10題</p>
+      
+      <div class="selection-info">
+        已選擇：<span id="selected-count">0</span> 個類別
+      </div>
+      <div class="category-container">
+        <!-- 類別1：日常生活 -->
+        <div class="category-card" onclick="toggleCategory(1)">
+          <input type="checkbox" class="category-checkbox" id="category1" data-category="1">
+          <h3>🏠 小一生活單詞</h3>
+          <p>• 家庭與家居</p>
+          <p>• 日常活動</p>
+          <p>• 基本需求</p>
+          <p>📊 共10題</p>
+        </div>
+        <!-- 類別2：學術教育 -->
+        <div class="category-card" onclick="toggleCategory(2)">
+          <input type="checkbox" class="category-checkbox" id="category2" data-category="2">
+          <h3>🎓 小二教育單詞</h3>
+          <p>• 學校科目</p>
+          <p>• 交通工具</p>
+          <p>• 日常相關</p>
+          <p>📊 共10題</p>
+        </div>
+        <!-- 類別3：過去式 -->
+        <div class="category-card" onclick="toggleCategory(3)">
+          <input type="checkbox" class="category-checkbox" id="category3" data-category="3">
+          <h3>💼 小三初小單詞</h3>
+          <p>• 食物術語</p>
+          <p>• 動詞溝通</p>
+          <p>• 生活相關</p>
+          <p>📊 共10題</p>
+        </div>
+
+        <!-- 類別4：形容詞 -->
+        <div class="category-card" onclick="toggleCategory(4)">
+          <input type="checkbox" class="category-checkbox" id="category4" data-category="4">
+          <h3>🔬 小四躍升單詞</h3>
+          <p>• 科學技術</p>
+          <p>• 性格形容</p>
+          <p>• 地方指示</p>
+          <p>📊 共10題</p>
+        </div>
+
+        <!-- 類別5：人文社會 -->
+        <div class="category-card" onclick="toggleCategory(5)">
+          <input type="checkbox" class="category-checkbox" id="category5" data-category="5">
+          <h3>🌍 小五呈分單詞</h3>
+          <p>• 文化藝術</p>
+          <p>• 社會問題</p>
+          <p>• 心理情感</p>
+          <p>📊 共10題</p>
+        </div>
+
+<!-- 類別6：小六英文單詞 -->
+        <div class="category-card" onclick="toggleCategory(6)">
+          <input type="checkbox" class="category-checkbox" id="category6" data-category="6">
+          <h3>🌍 小六英文單詞</h3>
+          <p>• 職業理想</p>
+          <p>• 社會時事</p>
+          <p>• 心理性格</p>
+          <p>📊 共10題</p>
+        </div>
+
+      </div>
+      <div class="category-stats">
+        <div class="stat-item">總題庫：1000題</div>
+        <div class="stat-item">每場測驗：10題</div>
+        <div class="stat-item">可多類別組合</div>
+      </div>
+      <button id="start-quiz-btn" disabled>開始測驗 🚀</button>
+      <button onclick="showScreen('start-screen')">返回主頁</button>
+    </div>
+    <!-- 測驗畫面 -->
+    <div id="quiz-screen" class="hidden">
+      <div id="question"></div>
+      <button id="speak-word">🔊 朗讀題目</button>
+      <div id="options"></div>
+      <div id="result"></div>
+      <div id="scoreboard"></div>
+      <button id="next-btn" class="hidden">下一題 ➡️</button>
+    </div>
+    <!-- 結束畫面 -->
+    <div id="end-screen" class="hidden">
+      <h2>🎉 遊戲完結！ 🎉</h2>
+      <p id="final-score"></p>
+      <p id="wrong-list" class="wrong-list-style"></p>
+      <button onclick="showScreen('category-screen')">再玩一次</button>
+      <button onclick="showScreen('start-screen')">返回主頁</button>
+    </div>
+  </div>
+<script>
+// 完整的50個單詞測驗題庫，分為5個類別
+const quizQuestions = {
+  // 類別1：日常生活單詞 (10題)
+  category1: [
+
+{
+"question": "單詞 'monitor' 的中文意思是？",
+"options": ["A. 老師", "B. 校長", "C. 班長", "D. 學生"],
+"correctAnswer": "C. 班長"
+},
+{
+"question": "單詞 'classmate' 的中文意思是？",
+"options": ["A. 朋友", "B. 同學", "C. 家人", "D. 鄰居"],
+"correctAnswer": "B. 同學"
+},
+{
+"question": "單詞 'principal' 的中文意思是？",
+"options": ["A. 班長", "B. 老師", "C. 校長", "D. 圖書管理員"],
+"correctAnswer": "C. 校長"
+},
+{
+"question": "單詞 'grandfather' 的中文意思是？",
+"options": ["A. 爺爺", "B. 奶奶", "C. 爸爸", "D. 媽媽"],
+"correctAnswer": "A. 爺爺"
+},
+{
+"question": "單詞 'grandmother' 的中文意思是？",
+"options": ["A. 爺爺", "B. 奶奶", "C. 外公", "D. 外婆"],
+"correctAnswer": "B. 奶奶"
+},
+{
+"question": "單詞 'brother' 的中文意思是？",
+"options": ["A. 姐姐", "B. 哥哥", "C. 妹妹", "D. 弟弟"],
+"correctAnswer": "B. 哥哥"
+},
+{
+"question": "單詞 'sister' 的中文意思是？",
+"options": ["A. 哥哥", "B. 弟弟", "C. 姐姐", "D. 妹妹"],
+"correctAnswer": "C. 姐姐"
+},
+{
+"question": "單詞 'father' 的中文意思是？",
+"options": ["A. 爸爸", "B. 媽媽", "C. 爺爺", "D. 奶奶"],
+"correctAnswer": "A. 爸爸"
+},
+{
+"question": "單詞 'mother' 的中文意思是？",
+"options": ["A. 爸爸", "B. 媽媽", "C. 外公", "D. 外婆"],
+"correctAnswer": "B. 媽媽"
+},
+{
+"question": "單詞 'book' 的中文意思是？",
+"options": ["A. 筆", "B. 書", "C. 橡皮", "D. 尺子"],
+"correctAnswer": "B. 書"
+},
+{
+"question": "單詞 'pen' 的中文意思是？",
+"options": ["A. 鉛筆", "B. 鋼筆", "C. 蠟筆", "D. 圓珠筆"],
+"correctAnswer": "B. 鋼筆"
+},
+{
+"question": "單詞 'pencil' 的中文意思是？",
+"options": ["A. 鋼筆", "B. 鉛筆", "C. 蠟筆", "D. 橡皮"],
+"correctAnswer": "B. 鉛筆"
+},
+{
+"question": "單詞 'ruler' 的中文意思是？",
+"options": ["A. 橡皮", "B. 尺子", "C. 筆盒", "D. 書包"],
+"correctAnswer": "B. 尺子"
+},
+{
+"question": "單詞 'crayon' 的中文意思是？",
+"options": ["A. 鉛筆", "B. 鋼筆", "C. 蠟筆", "D. 水彩筆"],
+"correctAnswer": "C. 蠟筆"
+},
+{
+"question": "單詞 'rubber' 的中文意思是？",
+"options": ["A. 尺子", "B. 橡皮", "C. 筆盒", "D. 書包"],
+"correctAnswer": "B. 橡皮"
+},
+{
+"question": "單詞 'pencil case' 的中文意思是？",
+"options": ["A. 書包", "B. 筆盒", "C. 文具袋", "D. 課本"],
+"correctAnswer": "B. 筆盒"
+},
+{
+"question": "單詞 'school bag' 的中文意思是？",
+"options": ["A. 筆盒", "B. 書包", "C. 文具袋", "D. 課本"],
+"correctAnswer": "B. 書包"
+},
+{
+"question": "單詞 'desk' 的中文意思是？",
+"options": ["A. 椅子", "B. 桌子", "C. 黑板", "D. 粉筆"],
+"correctAnswer": "B. 桌子"
+},
+{
+"question": "單詞 'chair' 的中文意思是？",
+"options": ["A. 桌子", "B. 椅子", "C. 黑板", "D. 粉筆"],
+"correctAnswer": "B. 椅子"
+},
+{
+"question": "單詞 'board' 的中文意思是？",
+"options": ["A. 黑板", "B. 白板", "C. 粉筆", "D. 黑板擦"],
+"correctAnswer": "A. 黑板"
+},
+{
+"question": "單詞 'door' 的中文意思是？",
+"options": ["A. 窗戶", "B. 門", "C. 牆壁", "D. 地板"],
+"correctAnswer": "B. 門"
+},
+{
+"question": "單詞 'window' 的中文意思是？",
+"options": ["A. 門", "B. 窗戶", "C. 牆壁", "D. 地板"],
+"correctAnswer": "B. 窗戶"
+},
+{
+"question": "單詞 'light' 的中文意思是？",
+"options": ["A. 風扇", "B. 燈", "C. 空調", "D. 電腦"],
+"correctAnswer": "B. 燈"
+},
+{
+"question": "單詞 'fan' 的中文意思是？",
+"options": ["A. 燈", "B. 風扇", "C. 空調", "D. 電腦"],
+"correctAnswer": "B. 風扇"
+},
+{
+"question": "單詞 'computer' 的中文意思是？",
+"options": ["A. 電視", "B. 電腦", "C. 手機", "D. 平板電腦"],
+"correctAnswer": "B. 電腦"
+},
+{
+"question": "單詞 'bin' 的中文意思是？",
+"options": ["A. 書包", "B. 筆盒", "C. 垃圾桶", "D. 課本"],
+"correctAnswer": "C. 垃圾桶"
+},
+{
+"question": "單詞 'monkey' 的中文意思是？",
+"options": ["A. 熊", "B. 猴子", "C. 熊貓", "D. 老虎"],
+"correctAnswer": "B. 猴子"
+},
+{
+"question": "單詞 'panda' 的中文意思是？",
+"options": ["A. 熊", "B. 猴子", "C. 熊貓", "D. 老虎"],
+"correctAnswer": "C. 熊貓"
+},
+{
+"question": "單詞 'lion' 的中文意思是？",
+"options": ["A. 老虎", "B. 獅子", "C. 大象", "D. 長頸鹿"],
+"correctAnswer": "B. 獅子"
+},
+{
+"question": "單詞 'elephant' 的中文意思是？",
+"options": ["A. 大象", "B. 長頸鹿", "C. 熊", "D. 猴子"],
+"correctAnswer": "A. 大象"
+},
+{
+"question": "單詞 'giraffe' 的中文意思是？",
+"options": ["A. 大象", "B. 長頸鹿", "C. 熊", "D. 老虎"],
+"correctAnswer": "B. 長頸鹿"
+},
+{
+"question": "單詞 'rabbit' 的中文意思是？",
+"options": ["A. 老鼠", "B. 貓", "C. 狗", "D. 兔子"],
+"correctAnswer": "D. 兔子"
+},
+{
+"question": "單詞 'bird' 的中文意思是？",
+"options": ["A. 鳥", "B. 魚", "C. 蝸牛", "D. 蝴蝶"],
+"correctAnswer": "A. 鳥"
+},
+{
+"question": "單詞 'fish' 的中文意思是？",
+"options": ["A. 鳥", "B. 魚", "C. 蝦", "D. 蟹"],
+"correctAnswer": "B. 魚"
+},
+{
+"question": "單詞 'head' 的中文意思是？",
+"options": ["A. 頭", "B. 身體", "C. 手臂", "D. 腿"],
+"correctAnswer": "A. 頭"
+},
+{
+"question": "單詞 'eye' 的中文意思是？",
+"options": ["A. 耳朵", "B. 眼睛", "C. 鼻子", "D. 嘴巴"],
+"correctAnswer": "B. 眼睛"
+},
+{
+"question": "單詞 'ear' 的中文意思是？",
+"options": ["A. 眼睛", "B. 耳朵", "C. 鼻子", "D. 嘴巴"],
+"correctAnswer": "B. 耳朵"
+},
+{
+"question": "單詞 'nose' 的中文意思是？",
+"options": ["A. 眼睛", "B. 耳朵", "C. 鼻子", "D. 嘴巴"],
+"correctAnswer": "C. 鼻子"
+},
+{
+"question": "單詞 'mouth' 的中文意思是？",
+"options": ["A. 眼睛", "B. 耳朵", "C. 鼻子", "D. 嘴巴"],
+"correctAnswer": "D. 嘴巴"
+},
+{
+"question": "單詞 'arm' 的中文意思是？",
+"options": ["A. 手臂", "B. 腿", "C. 手", "D. 腳"],
+"correctAnswer": "A. 手臂"
+},
+{
+"question": "單詞 'hand' 的中文意思是？",
+"options": ["A. 腳", "B. 手", "C. 手臂", "D. 腿"],
+"correctAnswer": "B. 手"
+},
+{
+"question": "單詞 'leg' 的中文意思是？",
+"options": ["A. 手臂", "B. 腿", "C. 手", "D. 腳"],
+"correctAnswer": "B. 腿"
+},
+{
+"question": "單詞 'foot' 的中文意思是？",
+"options": ["A. 手", "B. 腳", "C. 手臂", "D. 腿"],
+"correctAnswer": "B. 腳"
+},
+{
+"question": "單詞 'fruit' 的中文意思是？",
+"options": ["A. 蔬菜", "B. 水果", "C. 肉類", "D. 穀物"],
+"correctAnswer": "B. 水果"
+},
+{
+"question": "單詞 'apple' 的中文意思是？",
+"options": ["A. 香蕉", "B. 蘋果", "C. 橙子", "D. 梨"],
+"correctAnswer": "B. 蘋果"
+},
+{
+"question": "單詞 'banana' 的中文意思是？",
+"options": ["A. 香蕉", "B. 蘋果", "C. 橙子", "D. 梨"],
+"correctAnswer": "A. 香蕉"
+},
+{
+"question": "單詞 'orange' 的中文意思是？",
+"options": ["A. 香蕉", "B. 蘋果", "C. 橙子", "D. 梨"],
+"correctAnswer": "C. 橙子"
+},
+{
+"question": "單詞 'watermelon' 的中文意思是？",
+"options": ["A. 西瓜", "B. 南瓜", "C. 冬瓜", "D. 哈密瓜"],
+"correctAnswer": "A. 西瓜"
+},
+{
+"question": "單詞 'strawberry' 的中文意思是？",
+"options": ["A. 草莓", "B. 藍莓", "C. 樹莓", "D. 桑葚"],
+"correctAnswer": "A. 草莓"
+},
+{
+"question": "單詞 'peach' 的中文意思是？",
+"options": ["A. 桃子", "B. 李子", "C. 杏子", "D. 棗子"],
+"correctAnswer": "A. 桃子"
+},
+{
+"question": "單詞 'mango' 的中文意思是？",
+"options": ["A. 芒果", "B. 菠蘿", "C. 榴槤", "D. 山竹"],
+"correctAnswer": "A. 芒果"
+},
+{
+"question": "單詞 'toy' 的中文意思是？",
+"options": ["A. 文具", "B. 玩具", "C. 書包", "D. 課本"],
+"correctAnswer": "B. 玩具"
+},
+{
+"question": "單詞 'doll' 的中文意思是？",
+"options": ["A. 玩偶", "B. 汽車", "C. 飛機", "D. 火車"],
+"correctAnswer": "A. 玩偶"
+},
+{
+"question": "單詞 'robot' 的中文意思是？",
+"options": ["A. 機器人", "B. 玩偶", "C. 汽車", "D. 飛機"],
+"correctAnswer": "A. 機器人"
+},
+{
+"question": "單詞 'ball' 的中文意思是？",
+"options": ["A. 球", "B. 玩具", "C. 文具", "D. 書包"],
+"correctAnswer": "A. 球"
+},
+{
+"question": "單詞 'teddy bear' 的中文意思是？",
+"options": ["A. 熊玩偶", "B. 老虎玩偶", "C. 猴子玩偶", "D. 兔子玩偶"],
+"correctAnswer": "A. 熊玩偶"
+},
+{
+"question": "單詞 'toy car' 的中文意思是？",
+"options": ["A. 玩具汽車", "B. 玩具飛機", "C. 玩具火車", "D. 玩具船"],
+"correctAnswer": "A. 玩具汽車"
+},
+{
+"question": "單詞 'toy plane' 的中文意思是？",
+"options": ["A. 玩具汽車", "B. 玩具飛機", "C. 玩具火車", "D. 玩具船"],
+"correctAnswer": "B. 玩具飛機"
+},
+{
+"question": "單詞 'puzzle' 的中文意思是？",
+"options": ["A. 拼圖", "B. 積木", "C. 棋類", "D. 牌類"],
+"correctAnswer": "A. 拼圖"
+},
+{
+"question": "單詞 'park' 的中文意思是？",
+"options": ["A. 學校", "B. 公園", "C. 圖書館", "D. 醫院"],
+"correctAnswer": "B. 公園"
+},
+
+{
+"question": "單詞 'student' 的中文意思是？",
+"options": ["A. 老師", "B. 校長", "C. 學生", "D. 圖書管理員"],
+"correctAnswer": "C. 學生"
+},
+{
+"question": "單詞 'teacher' 的中文意思是？",
+"options": ["A. 學生", "B. 家長", "C. 校工", "D. 老師"],
+"correctAnswer": "D. 老師"
+},
+{
+"question": "單詞 'classroom' 的中文意思是？",
+"options": ["A. 圖書館", "B. 操場", "C. 教室", "D. 辦公室"],
+"correctAnswer": "C. 教室"
+},
+{
+"question": "單詞 'blackboard' 的中文意思是？",
+"options": ["A. 白板", "B. 粉筆", "C. 黑板擦", "D. 黑板"],
+"correctAnswer": "D. 黑板"
+},
+{
+"question": "單詞 'whiteboard' 的中文意思是？",
+"options": ["A. 黑板", "B. 粉筆", "C. 白板", "D. 白板筆"],
+"correctAnswer": "C. 白板"
+},
+{
+"question": "單詞 'eraser' 的中文意思是？",
+"options": ["A. 尺子", "B. 筆盒", "C. 橡皮", "D. 書包"],
+"correctAnswer": "C. 橡皮"
+},
+{
+"question": "單詞 'pencil case' 的中文意思是？",
+"options": ["A. 書包", "B. 文具袋", "C. 課本", "D. 筆盒"],
+"correctAnswer": "D. 筆盒"
+},
+{
+"question": "單詞 'school' 的中文意思是？",
+"options": ["A. 醫院", "B. 公園", "C. 商店", "D. 學校"],
+"correctAnswer": "D. 學校"
+},
+{
+"question": "單詞 'home' 的中文意思是？",
+"options": ["A. 學校", "B. 公園", "C. 家", "D. 商店"],
+"correctAnswer": "C. 家"
+},
+{
+"question": "單詞 'friend' 的中文意思是？",
+"options": ["A. 敵人", "B. 同學", "C. 朋友", "D. 家人"],
+"correctAnswer": "C. 朋友"
+},
+{
+"question": "單詞 'family' 的中文意思是？",
+"options": ["A. 朋友", "B. 同學", "C. 老師", "D. 家人"],
+"correctAnswer": "D. 家人"
+},
+{
+"question": "單詞 'father' 的中文意思是？",
+"options": ["A. 媽媽", "B. 爺爺", "C. 爸爸", "D. 奶奶"],
+"correctAnswer": "C. 爸爸"
+},
+{
+"question": "單詞 'mother' 的中文意思是？",
+"options": ["A. 爸爸", "B. 外公", "C. 外婆", "D. 媽媽"],
+"correctAnswer": "D. 媽媽"
+},
+{
+"question": "單詞 'brother' 的中文意思是？",
+"options": ["A. 姐姐", "B. 妹妹", "C. 哥哥", "D. 弟弟"],
+"correctAnswer": "C. 哥哥"
+},
+{
+"question": "單詞 'sister' 的中文意思是？",
+"options": ["A. 哥哥", "B. 弟弟", "C. 妹妹", "D. 姐姐"],
+"correctAnswer": "D. 姐姐"
+},
+{
+"question": "單詞 'grandfather' 的中文意思是？",
+"options": ["A. 奶奶", "B. 外公", "C. 爺爺", "D. 外婆"],
+"correctAnswer": "C. 爺爺"
+},
+{
+"question": "單詞 'grandmother' 的中文意思是？",
+"options": ["A. 爺爺", "B. 外公", "C. 外婆", "D. 奶奶"],
+"correctAnswer": "D. 奶奶"
+},
+{
+"question": "單詞 'uncle' 的中文意思是？",
+"options": ["A. 阿姨", "B. 姑姑", "C. 舅舅", "D. 叔叔"],
+"correctAnswer": "D. 叔叔"
+},
+{
+"question": "單詞 'aunt' 的中文意思是？",
+"options": ["A. 叔叔", "B. 舅舅", "C. 阿姨", "D. 姑姑"],
+"correctAnswer": "C. 阿姨"
+},
+{
+"question": "單詞 'cousin' 的中文意思是？",
+"options": ["A. 兄弟姐妹", "B. 父母", "C. 祖父母", "D. 堂兄弟姐妹"],
+"correctAnswer": "D. 堂兄弟姐妹"
+},
+{
+"question": "單詞 'baby' 的中文意思是？",
+"options": ["A. 小孩", "B. 青少年", "C. 嬰兒", "D. 成年人"],
+"correctAnswer": "C. 嬰兒"
+},
+{
+"question": "單詞 'cat' 的中文意思是？",
+"options": ["A. 狗", "B. 兔子", "C. 老鼠", "D. 貓"],
+"correctAnswer": "D. 貓"
+},
+{
+"question": "單詞 'dog' 的中文意思是？",
+"options": ["A. 貓", "B. 兔子", "C. 狗", "D. 老鼠"],
+"correctAnswer": "C. 狗"
+},
+{
+"question": "單詞 'rabbit' 的中文意思是？",
+"options": ["A. 貓", "B. 狗", "C. 兔子", "D. 老鼠"],
+"correctAnswer": "C. 兔子"
+},
+{
+"question": "單詞 'bird' 的中文意思是？",
+"options": ["A. 魚", "B. 蝴蝶", "C. 蜜蜂", "D. 鳥"],
+"correctAnswer": "D. 鳥"
+},
+{
+"question": "單詞 'fish' 的中文意思是？",
+"options": ["A. 鳥", "B. 蝦", "C. 蟹", "D. 魚"],
+"correctAnswer": "D. 魚"
+},
+{
+"question": "單詞 'hamster' 的中文意思是？",
+"options": ["A. 兔子", "B. 老鼠", "C. 松鼠", "D. 倉鼠"],
+"correctAnswer": "D. 倉鼠"
+},
+{
+"question": "單詞 'parrot' 的中文意思是？",
+"options": ["A. 麻雀", "B. 喜鵲", "C. 鸚鵡", "D. 燕子"],
+"correctAnswer": "C. 鸚鵡"
+},
+{
+"question": "單詞 'turtle' 的中文意思是？",
+"options": ["A. 青蛙", "B. 蛇", "C. 蜥蜴", "D. 烏龜"],
+"correctAnswer": "D. 烏龜"
+},
+{
+"question": "單詞 'snake' 的中文意思是？",
+"options": ["A. 烏龜", "B. 青蛙", "C. 蛇", "D. 蜥蜴"],
+"correctAnswer": "C. 蛇"
+},
+{
+"question": "單詞 'elephant' 的中文意思是？",
+"options": ["A. 長頸鹿", "B. 熊", "C. 猴子", "D. 大象"],
+"correctAnswer": "D. 大象"
+},
+{
+"question": "單詞 'lion' 的中文意思是？",
+"options": ["A. 老虎", "B. 大象", "C. 長頸鹿", "D. 獅子"],
+"correctAnswer": "D. 獅子"
+},
+{
+"question": "單詞 'tiger' 的中文意思是？",
+"options": ["A. 獅子", "B. 大象", "C. 長頸鹿", "D. 老虎"],
+"correctAnswer": "D. 老虎"
+},
+{
+"question": "單詞 'giraffe' 的中文意思是？",
+"options": ["A. 大象", "B. 熊", "C. 猴子", "D. 長頸鹿"],
+"correctAnswer": "D. 長頸鹿"
+},
+{
+"question": "單詞 'monkey' 的中文意思是？",
+"options": ["A. 熊", "B. 熊貓", "C. 老虎", "D. 猴子"],
+"correctAnswer": "D. 猴子"
+},
+{
+"question": "單詞 'panda' 的中文意思是？",
+"options": ["A. 熊", "B. 猴子", "C. 熊貓", "D. 老虎"],
+"correctAnswer": "C. 熊貓"
+},
+{
+"question": "單詞 'bear' 的中文意思是？",
+"options": ["A. 猴子", "B. 熊貓", "C. 老虎", "D. 熊"],
+"correctAnswer": "D. 熊"
+},
+{
+"question": "單詞 'apple' 的中文意思是？",
+"options": ["A. 香蕉", "B. 橙子", "C. 蘋果", "D. 梨"],
+"correctAnswer": "C. 蘋果"
+},
+{
+"question": "單詞 'banana' 的中文意思是？",
+"options": ["A. 蘋果", "B. 橙子", "C. 梨", "D. 香蕉"],
+"correctAnswer": "D. 香蕉"
+},
+{
+"question": "單詞 'orange' 的中文意思是？",
+"options": ["A. 香蕉", "B. 蘋果", "C. 橙子", "D. 梨"],
+"correctAnswer": "C. 橙子"
+},
+{
+"question": "單詞 'pear' 的中文意思是？",
+"options": ["A. 香蕉", "B. 蘋果", "C. 橙子", "D. 梨"],
+"correctAnswer": "D. 梨"
+},
+{
+"question": "單詞 'grape' 的中文意思是？",
+"options": ["A. 草莓", "B. 藍莓", "C. 葡萄", "D. 樹莓"],
+"correctAnswer": "C. 葡萄"
+},
+{
+"question": "單詞 'strawberry' 的中文意思是？",
+"options": ["A. 葡萄", "B. 藍莓", "C. 樹莓", "D. 草莓"],
+"correctAnswer": "D. 草莓"
+},
+{
+"question": "單詞 'watermelon' 的中文意思是？",
+"options": ["A. 南瓜", "B. 冬瓜", "C. 哈密瓜", "D. 西瓜"],
+"correctAnswer": "D. 西瓜"
+},
+{
+"question": "單詞 'mango' 的中文意思是？",
+"options": ["A. 菠蘿", "B. 榴槤", "C. 山竹", "D. 芒果"],
+"correctAnswer": "D. 芒果"
+},
+{
+"question": "單詞 'peach' 的中文意思是？",
+"options": ["A. 李子", "B. 杏子", "C. 棗子", "D. 桃子"],
+"correctAnswer": "D. 桃子"
+},
+{
+"question": "單詞 'toy' 的中文意思是？",
+"options": ["A. 文具", "B. 書包", "C. 課本", "D. 玩具"],
+"correctAnswer": "D. 玩具"
+},
+{
+"question": "單詞 'doll' 的中文意思是？",
+"options": ["A. 汽車", "B. 飛機", "C. 火車", "D. 玩偶"],
+"correctAnswer": "D. 玩偶"
+},
+{
+"question": "單詞 'robot' 的中文意思是？",
+"options": ["A. 玩偶", "B. 汽車", "C. 飛機", "D. 機器人"],
+"correctAnswer": "D. 機器人"
+},
+{
+"question": "單詞 'ball' 的中文意思是？",
+"options": ["A. 玩具", "B. 文具", "C. 書包", "D. 球"],
+"correctAnswer": "D. 球"
+},
+{
+"question": "單詞 'car' 的中文意思是？",
+"options": ["A. 飛機", "B. 火車", "C. 船", "D. 汽車"],
+"correctAnswer": "D. 汽車"
+},
+{
+"question": "單詞 'plane' 的中文意思是？",
+"options": ["A. 汽車", "B. 火車", "C. 船", "D. 飛機"],
+"correctAnswer": "D. 飛機"
+},
+{
+"question": "單詞 'train' 的中文意思是？",
+"options": ["A. 汽車", "B. 飛機", "C. 船", "D. 火車"],
+"correctAnswer": "D. 火車"
+},
+{
+"question": "單詞 'boat' 的中文意思是？",
+"options": ["A. 汽車", "B. 飛機", "C. 火車", "D. 船"],
+"correctAnswer": "D. 船"
+},
+{
+"question": "單詞 'bike' 的中文意思是？",
+"options": ["A. 汽車", "B. 飛機", "C. 火車", "D. 腳踏車"],
+"correctAnswer": "D. 腳踏車"
+},
+{
+"question": "單詞 'book' 的中文意思是？",
+"options": ["A. 筆", "B. 橡皮", "C. 書", "D. 尺子"],
+"correctAnswer": "C. 書"
+},
+{
+"question": "單詞 'pen' 的中文意思是？",
+"options": ["A. 鉛筆", "B. 蠟筆", "C. 圓珠筆", "D. 鋼筆"],
+"correctAnswer": "D. 鋼筆"
+},
+{
+"question": "單詞 'pencil' 的中文意思是？",
+"options": ["A. 鋼筆", "B. 蠟筆", "C. 橡皮", "D. 鉛筆"],
+"correctAnswer": "D. 鉛筆"
+},
+{
+"question": "單詞 'ruler' 的中文意思是？",
+"options": ["A. 橡皮", "B. 筆盒", "C. 書包", "D. 尺子"],
+"correctAnswer": "D. 尺子"
+},
+{
+"question": "單詞 'crayon' 的中文意思是？",
+"options": ["A. 鉛筆", "B. 鋼筆", "C. 蠟筆", "D. 水彩筆"],
+"correctAnswer": "C. 蠟筆"
+},
+{
+"question": "單詞 'bag' 的中文意思是？",
+"options": ["A. 筆盒", "B. 文具袋", "C. 課本", "D. 書包"],
+"correctAnswer": "D. 書包"
+},
+{
+"question": "單詞 'shirt' 的中文意思是？",
+"options": ["A. T恤", "B. 外套", "C. 毛衣", "D. 襯衫"],
+"correctAnswer": "D. 襯衫"
+},
+{
+"question": "單詞 'T-shirt' 的中文意思是？",
+"options": ["A. 襯衫", "B. 外套", "C. 毛衣", "D. T恤"],
+"correctAnswer": "D. T恤"
+},
+{
+"question": "單詞 'skirt' 的中文意思是？",
+"options": ["A. 褲子", "B. 外套", "C. 毛衣", "D. 裙子"],
+"correctAnswer": "D. 裙子"
+},
+{
+"question": "單詞 'trousers' 的中文意思是？",
+"options": ["A. 裙子", "B. 外套", "C. 毛衣", "D. 褲子"],
+"correctAnswer": "D. 褲子"
+},
+{
+"question": "單詞 'shoes' 的中文意思是？",
+"options": ["A. 帽子", "B. 襪子", "C. 手套", "D. 鞋子"],
+"correctAnswer": "D. 鞋子"
+},
+{
+"question": "單詞 'socks' 的中文意思是？",
+"options": ["A. 帽子", "B. 鞋子", "C. 手套", "D. 襪子"],
+"correctAnswer": "D. 襪子"
+},
+{
+"question": "單詞 'cap' 的中文意思是？",
+"options": ["A. 鞋子", "B. 襪子", "C. 手套", "D. 帽子"],
+"correctAnswer": "D. 帽子"
+},
+{
+"question": "單詞 'coat' 的中文意思是？",
+"options": ["A. 襯衫", "B. T恤", "C. 毛衣", "D. 外套"],
+"correctAnswer": "D. 外套"
+},
+{
+"question": "單詞 'sweater' 的中文意思是？",
+"options": ["A. 襯衫", "B. T恤", "C. 外套", "D. 毛衣"],
+"correctAnswer": "D. 毛衣"
+},
+{
+"question": "單詞 'tree' 的中文意思是？",
+"options": ["A. 花", "B. 草", "C. 樹", "D. 木"],
+"correctAnswer": "C. 樹"
+},
+{
+"question": "單詞 'flower' 的中文意思是？",
+"options": ["A. 花", "B. 草", "C. 樹", "D. 葉"],
+"correctAnswer": "A. 花"
+},
+{
+"question": "單詞 'grass' 的中文意思是？",
+"options": ["A. 花", "B. 草", "C. 樹", "D. 葉"],
+"correctAnswer": "B. 草"
+},
+{
+"question": "單詞 'bench' 的中文意思是？",
+"options": ["A. 椅子", "B. 桌子", "C. 長凳", "D. 石頭"],
+"correctAnswer": "C. 長凳"
+},
+{
+"question": "單詞 'butterfly' 的中文意思是？",
+"options": ["A. 蝴蝶", "B. 蜜蜂", "C. 蜻蜓", "D. 蝗蟲"],
+"correctAnswer": "A. 蝴蝶"
+},
+{
+"question": "單詞 'bee' 的中文意思是？",
+"options": ["A. 蝴蝶", "B. 蜜蜂", "C. 蜻蜓", "D. 蝗蟲"],
+"correctAnswer": "B. 蜜蜂"
+},
+{
+"question": "單詞 'ant' 的中文意思是？",
+"options": ["A. 螞蟻", "B. 蜜蜂", "C. 蝴蝶", "D. 蜻蜓"],
+"correctAnswer": "A. 螞蟻"
+},
+{
+"question": "單詞 'clothes' 的中文意思是？",
+"options": ["A. 文具", "B. 玩具", "C. 衣服", "D. 書包"],
+"correctAnswer": "C. 衣服"
+},
+{
+"question": "單詞 'T-shirt' 的中文意思是？",
+"options": ["A. 襯衫", "B. T恤", "C. 外套", "D. 毛衣"],
+"correctAnswer": "B. T恤"
+},
+{
+"question": "單詞 'skirt' 的中文意思是？",
+"options": ["A. 褲子", "B. 裙子", "C. 外套", "D. 毛衣"],
+"correctAnswer": "B. 裙子"
+},
+{
+"question": "單詞 'shoes' 的中文意思是？",
+"options": ["A. 帽子", "B. 鞋子", "C. 襪子", "D. 手套"],
+"correctAnswer": "B. 鞋子"
+},
+{
+"question": "單詞 'socks' 的中文意思是？",
+"options": ["A. 帽子", "B. 鞋子", "C. 襪子", "D. 手套"],
+"correctAnswer": "C. 襪子"
+},
+{
+"question": "單詞 'cap' 的中文意思是？",
+"options": ["A. 帽子", "B. 鞋子", "C. 襪子", "D. 手套"],
+"correctAnswer": "A. 帽子"
+},
+{
+"question": "單詞 'pet' 的中文意思是？",
+"options": ["A. 玩具", "B. 寵物", "C. 文具", "D. 書包"],
+"correctAnswer": "B. 寵物"
+},
+{
+"question": "單詞 'dog' 的中文意思是？",
+"options": ["A. 貓", "B. 狗", "C. 兔子", "D. 老鼠"],
+"correctAnswer": "B. 狗"
+},
+{
+"question": "單詞 'cat' 的中文意思是？",
+"options": ["A. 貓", "B. 狗", "C. 兔子", "D. 老鼠"],
+"correctAnswer": "A. 貓"
+},
+{
+"question": "單詞 'hamster' 的中文意思是？",
+"options": ["A. 倉鼠", "B. 兔子", "C. 老鼠", "D. 松鼠"],
+"correctAnswer": "A. 倉鼠"
+},
+{
+"question": "單詞 'parrot' 的中文意思是？",
+"options": ["A. 鸚鵡", "B. 麻雀", "C. 喜鵲", "D. 燕子"],
+"correctAnswer": "A. 鸚鵡"
+}
+
+  ],
+
+
+  // 類別2：學術教育單詞 (10題)
+    category2: [
+ 
+{
+"question": "單詞 'litter' 的中文意思是？",
+"options": ["A. 燒垃圾", "B. 埋垃圾", "C. 亂丟垃圾", "D. 撿垃圾"],
+"correctAnswer": "C. 亂丟垃圾"
+},
+{
+"question": "單詞 'spit' 的中文意思是？",
+"options": ["A. 喝水", "B. 吃東西", "C. 吞嚥", "D. 吐痰"],
+"correctAnswer": "D. 吐痰"
+},
+{
+"question": "單詞 'climb' 的中文意思是？",
+"options": ["A. 跑", "B. 走", "C. 跳躍", "D. 爬"],
+"correctAnswer": "D. 爬"
+},
+{
+"question": "單詞 'borrow' 的中文意思是？",
+"options": ["A. 購買", "B. 贈送", "C. 借給", "D. 借來"],
+"correctAnswer": "D. 借來"
+},
+{
+"question": "單詞 'catch' 的中文意思是？",
+"options": ["A. 尋找", "B. 隱藏", "C. 丟擲", "D. 接住"],
+"correctAnswer": "D. 接住"
+},
+{
+"question": "單詞 'drive' 的中文意思是？",
+"options": ["A. 走路", "B. 跑步", "C. 騎", "D. 開車"],
+"correctAnswer": "D. 開車"
+},
+{
+"question": "單詞 'feed' 的中文意思是？",
+"options": ["A. 喝", "B. 種植", "C. 餵養", "D. 吃"],
+"correctAnswer": "C. 餵養"
+},
+{
+"question": "單詞 'water' 的中文意思是？（澆水）",
+"options": ["A. 放水", "B. 裝水", "C. 喝水", "D. 澆水"],
+"correctAnswer": "D. 澆水"
+},
+{
+"question": "單詞 'sweep' 的中文意思是？",
+"options": ["A. 擦窗", "B. 洗碗", "C. 拖地", "D. 掃地"],
+"correctAnswer": "D. 掃地"
+},
+{
+"question": "單詞 'mop' 的中文意思是？",
+"options": ["A. 擦桌", "B. 洗衣", "C. 掃地", "D. 拖地"],
+"correctAnswer": "D. 拖地"
+},
+{
+"question": "單詞 'fold' 的中文意思是？",
+"options": ["A. 晾曬", "B. 熨燙", "C. 折疊", "D. 洗滌"],
+"correctAnswer": "C. 折疊"
+},
+{
+"question": "單詞 'hang' 的中文意思是？（晾衣服）",
+"options": ["A. 放", "B. 拿", "C. 丟棄", "D. 掛"],
+"correctAnswer": "D. 掛"
+},
+{
+"question": "單詞 'tidy' 的中文意思是？",
+"options": ["A. 丟棄", "B. 尋找", "C. 弄亂", "D. 整理"],
+"correctAnswer": "D. 整理"
+},
+{
+"question": "單詞 'clear' 的中文意思是？（收拾桌子）",
+"options": ["A. 擦淨", "B. 移動", "C. 擺放", "D. 收拾"],
+"correctAnswer": "D. 收拾"
+},
+{
+"question": "單詞 'dry' 的中文意思是？（擦乾碗）",
+"options": ["A. 冷卻", "B. 加熱", "C. 弄濕", "D. 乾燥"],
+"correctAnswer": "D. 乾燥"
+},
+{
+"question": "單詞 'walk' 的中文意思是？（遛狗）",
+"options": ["A. 抱", "B. 喂", "C. 跑", "D. 走"],
+"correctAnswer": "D. 走"
+},
+{
+"question": "單詞 'plant' 的中文意思是？（種花）",
+"options": ["A. 澆花", "B. 賞花", "C. 摘花", "D. 種花"],
+"correctAnswer": "D. 種花"
+},
+{
+"question": "單詞 'pick' 的中文意思是？（摘花）",
+"options": ["A. 澆花", "B. 買花", "C. 種花", "D. 摘花"],
+"correctAnswer": "D. 摘花"
+},
+{
+"question": "單詞 'push' 的中文意思是？",
+"options": ["A. 抱", "B. 扛", "C. 拉", "D. 推"],
+"correctAnswer": "D. 推"
+},
+{
+"question": "單詞 'study' 的中文意思是？",
+"options": ["A. 工作", "B. 休息", "C. 玩耍", "D. 學習"],
+"correctAnswer": "D. 學習"
+},
+{
+"question": "單詞 'teach' 的中文意思是？",
+"options": ["A. 工作", "B. 玩耍", "C. 學習", "D. 教導"],
+"correctAnswer": "D. 教導"
+},
+{
+"question": "單詞 'learn' 的中文意思是？",
+"options": ["A. 忘記", "B. 記得", "C. 教導", "D. 學習"],
+"correctAnswer": "D. 學習"
+},
+{
+"question": "單詞 'help' 的中文意思是？",
+"options": ["A. 拒絕", "B. 接受", "C. 麻煩", "D. 幫助"],
+"correctAnswer": "D. 幫助"
+},
+{
+"question": "單詞 'visit' 的中文意思是？",
+"options": ["A. 等待", "B. 尋找", "C. 離開", "D. 拜訪"],
+"correctAnswer": "D. 拜訪"
+},
+{
+"question": "單詞 'cook' 的中文意思是？",
+"options": ["A. 買", "B. 切", "C. 吃", "D. 煮"],
+"correctAnswer": "D. 煮"
+},
+{
+"question": "單詞 'wash' 的中文意思是？",
+"options": ["A. 洗", "B. 刷", "C. 擦", "D. 掃"],
+"correctAnswer": "A. 洗"
+},
+{
+"question": "單詞 'brush' 的中文意思是？（刷牙）",
+"options": ["A. 擦", "B. 梳", "C. 洗", "D. 刷"],
+"correctAnswer": "D. 刷"
+},
+{
+"question": "單詞 'shower' 的中文意思是？",
+"options": ["A. 洗臉", "B. 梳頭", "C. 洗澡（淋浴）", "D. 洗澡（盆浴）"],
+"correctAnswer": "C. 洗澡（淋浴）"
+},
+{
+"question": "單詞 'bath' 的中文意思是？",
+"options": ["A. 洗臉", "B. 刷牙", "C. 洗澡（淋浴）", "D. 洗澡（盆浴）"],
+"correctAnswer": "D. 洗澡（盆浴）"
+},
+{
+"question": "單詞 'dress' 的中文意思是？（穿衣服）",
+"options": ["A. 洗衣服", "B. 疊衣服", "C. 穿衣服", "D. 脫衣服"],
+"correctAnswer": "C. 穿衣服"
+},
+{
+"question": "單詞 'go' 的中文意思是？（睡覺）",
+"options": ["A. 吃飯", "B. 上學", "C. 起床", "D. 睡覺"],
+"correctAnswer": "D. 睡覺"
+},
+{
+"question": "單詞 'have' 的中文意思是？（吃午餐）",
+"options": ["A. 晚餐", "B. 點心", "C. 早餐", "D. 午餐"],
+"correctAnswer": "D. 午餐"
+},
+{
+"question": "單詞 'eat' 的中文意思是？",
+"options": ["A. 煮", "B. 切", "C. 喝", "D. 吃"],
+"correctAnswer": "D. 吃"
+},
+{
+"question": "單詞 'drink' 的中文意思是？",
+"options": ["A. 煮", "B. 切", "C. 吃", "D. 喝"],
+"correctAnswer": "D. 喝"
+},
+{
+"question": "單詞 'play' 的中文意思是？（玩溜滑梯）",
+"options": ["A. 騎滑板車", "B. 踢足球", "C. 玩溜滑梯", "D. 盪鞦韆"],
+"correctAnswer": "C. 玩溜滑梯"
+},
+{
+"question": "單詞 'ride' 的中文意思是？（騎滑板車）",
+"options": ["A. 溜滑梯", "B. 鞦韆", "C. 腳踏車", "D. 滑板車"],
+"correctAnswer": "D. 滑板車"
+},
+{
+"question": "單詞 'swim' 的中文意思是？",
+"options": ["A. 跳繩", "B. 騎車", "C. 跑步", "D. 游泳"],
+"correctAnswer": "D. 游泳"
+},
+{
+"question": "單詞 'hike' 的中文意思是？",
+"options": ["A. 釣魚", "B. 燒烤", "C. 露營", "D. 遠足"],
+"correctAnswer": "D. 遠足"
+},
+{
+"question": "單詞 'fly' 的中文意思是？（放風箏）",
+"options": ["A. 跑", "B. 跳", "C. 飛", "D. 放風箏"],
+"correctAnswer": "D. 放風箏"
+},
+{
+"question": "單詞 'watch' 的中文意思是？（看電視）",
+"options": ["A. 聞", "B. 嘗", "C. 聽", "D. 看"],
+"correctAnswer": "D. 看"
+},
+{
+"question": "單詞 'read' 的中文意思是？（讀書）",
+"options": ["A. 畫", "B. 說", "C. 寫", "D. 讀"],
+"correctAnswer": "D. 讀"
+},
+{
+"question": "單詞 'write' 的中文意思是？（寫作業）",
+"options": ["A. 畫", "B. 說", "C. 讀", "D. 寫"],
+"correctAnswer": "D. 寫"
+},
+{
+"question": "單詞 'draw' 的中文意思是？（畫畫）",
+"options": ["A. 畫", "B. 說", "C. 寫", "D. 讀"],
+"correctAnswer": "A. 畫"
+},
+{
+"question": "單詞 'paint' 的中文意思是？（畫畫）",
+"options": ["A. 畫", "B. 說", "C. 寫", "D. 讀"],
+"correctAnswer": "A. 畫"
+},
+{
+"question": "單詞 'sing' 的中文意思是？（唱歌）",
+"options": ["A. 跑步", "B. 跳繩", "C. 跳舞", "D. 唱歌"],
+"correctAnswer": "D. 唱歌"
+},
+{
+"question": "單詞 'dance' 的中文意思是？（跳舞）",
+"options": ["A. 跑步", "B. 跳繩", "C. 唱歌", "D. 跳舞"],
+"correctAnswer": "D. 跳舞"
+},
+{
+"question": "單詞 'run' 的中文意思是？",
+"options": ["A. 跳", "B. 爬", "C. 走", "D. 跑"],
+"correctAnswer": "D. 跑"
+},
+{
+"question": "單詞 'jump' 的中文意思是？",
+"options": ["A. 走", "B. 爬", "C. 跑", "D. 跳"],
+"correctAnswer": "D. 跳"
+},
+{
+"question": "單詞 'skip' 的中文意思是？（跳繩）",
+"options": ["A. 游泳", "B. 騎車", "C. 跳繩", "D. 跑步"],
+"correctAnswer": "C. 跳繩"
+},
+{
+"question": "單詞 'sit' 的中文意思是？（坐好）",
+"options": ["A. 跑", "B. 跳", "C. 站", "D. 坐"],
+"correctAnswer": "D. 坐"
+},
+{
+"question": "單詞 'stand' 的中文意思是？（站起來）",
+"options": ["A. 跑", "B. 跳", "C. 坐", "D. 站"],
+"correctAnswer": "D. 站"
+},
+{
+"question": "單詞 'wait' 的中文意思是？（等待）",
+"options": ["A. 跳", "B. 走", "C. 跑", "D. 等待"],
+"correctAnswer": "D. 等待"
+},
+{
+"question": "單詞 'keep' 的中文意思是？（保持安靜）",
+"options": ["A. 尋找", "B. 移動", "C. 保持", "D. 丟棄"],
+"correctAnswer": "C. 保持"
+},
+{
+"question": "單詞 'give' 的中文意思是？（給禮物）",
+"options": ["A. 丟", "B. 找", "C. 拿", "D. 給"],
+"correctAnswer": "D. 給"
+},
+{
+"question": "單詞 'windy' 的中文意思是？",
+"options": ["A. 多風的", "B. 多雨的", "C. 多雲的", "D. 晴朗的"],
+"correctAnswer": "A. 多風的"
+},
+{
+"question": "單詞 'wet' 的中文意思是？",
+"options": ["A. 乾燥的", "B. 潮濕的", "C. 溫暖的", "D. 涼爽的"],
+"correctAnswer": "B. 潮濕的"
+},
+{
+"question": "單詞 'dry' 的中文意思是？",
+"options": ["A. 潮濕的", "B. 寒冷的", "C. 乾燥的", "D. 炎熱的"],
+"correctAnswer": "C. 乾燥的"
+},
+{
+"question": "單詞 'warm' 的中文意思是？",
+"options": ["A. 寒冷的", "B. 溫暖的", "C. 炎熱的", "D. 涼爽的"],
+"correctAnswer": "D. 涼爽的"
+},
+{
+"question": "單詞 'cool' 的中文意思是？",
+"options": ["A. 涼爽的", "B. 溫暖的", "C. 炎熱的", "D. 寒冷的"],
+"correctAnswer": "A. 涼爽的"
+},
+{
+"question": "單詞 'cold' 的中文意思是？",
+"options": ["A. 炎熱的", "B. 溫暖的", "C. 寒冷的", "D. 涼爽的"],
+"correctAnswer": "B. 溫暖的"
+},
+{
+"question": "單詞 'sunny' 的中文意思是？",
+"options": ["A. 多雲的", "B. 晴朗的", "C. 多雨的", "D. 多風的"],
+"correctAnswer": "C. 多雨的"
+},
+{
+"question": "單詞 'spring' 的中文意思是？",
+"options": ["A. 春天", "B. 夏天", "C. 秋天", "D. 冬天"],
+"correctAnswer": "D. 冬天"
+},
+{
+"question": "單詞 'summer' 的中文意思是？",
+"options": ["A. 秋天", "B. 冬天", "C. 夏天", "D. 春天"],
+"correctAnswer": "A. 秋天"
+},
+{
+"question": "單詞 'autumn' 的中文意思是？",
+"options": ["A. 冬天", "B. 秋天", "C. 春天", "D. 夏天"],
+"correctAnswer": "B. 秋天"
+},
+{
+"question": "單詞 'winter' 的中文意思是？",
+"options": ["A. 夏天", "B. 春天", "C. 冬天", "D. 秋天"],
+"correctAnswer": "C. 冬天"
+},
+{
+"question": "單詞 'brush' 的中文意思是？（brush teeth）",
+"options": ["A. 洗", "B. 刷", "C. 擦", "D. 梳"],
+"correctAnswer": "D. 梳"
+},
+{
+"question": "單詞 'dressed' 的中文意思是？（get dressed）",
+"options": ["A. 穿衣", "B. 脫衣", "C. 睡覺", "D. 起床"],
+"correctAnswer": "A. 穿衣"
+},
+{
+"question": "單詞 'lunch' 的中文意思是？（have lunch）",
+"options": ["A. 早餐", "B. 午餐", "C. 晚餐", "D. 點心"],
+"correctAnswer": "B. 午餐"
+},
+{
+"question": "單詞 'bed' 的中文意思是？（go to bed）",
+"options": ["A. 起床", "B. 睡覺", "C. 梳頭", "D. 吃飯"],
+"correctAnswer": "B. 睡覺"
+},
+{
+"question": "單詞 'classroom' 的中文意思是？",
+"options": ["A. 圖書館", "B. 教室", "C. 美術室", "D. 音樂室"],
+"correctAnswer": "A. 圖書館"
+},
+{
+"question": "單詞 'library' 的中文意思是？",
+"options": ["A. 教室", "B. 圖書館", "C. 操場", "D. 食堂"],
+"correctAnswer": "B. 圖書館"
+},
+{
+"question": "單詞 'art' 的中文意思是？（art room）",
+"options": ["A. 音樂", "B. 美術", "C. 體育", "D. 電腦"],
+"correctAnswer": "B. 美術"
+},
+{
+"question": "單詞 'music' 的中文意思是？（music room）",
+"options": ["A. 美術", "B. 體育", "C. 音樂", "D. 數學"],
+"correctAnswer": "C. 音樂"
+},
+{
+"question": "單詞 'playground' 的中文意思是？",
+"options": ["A. 操場", "B. 教室", "C. 圖書館", "D. 實驗室"],
+"correctAnswer": "A. 操場"
+},
+{
+"question": "單詞 'bus' 的中文意思是？",
+"options": ["A. 小汽車", "B. 公車", "C. 計程車", "D. 地鐵"],
+"correctAnswer": "B. 公車"
+},
+{
+"question": "單詞 'minibus' 的中文意思是？",
+"options": ["A. 公車", "B. 小巴", "C. 計程車", "D. 渡輪"],
+"correctAnswer": "B. 小巴"
+},
+{
+"question": "單詞 'tram' 的中文意思是？",
+"options": ["A. 電車", "B. 地鐵", "C. 渡輪", "D. 小巴"],
+"correctAnswer": "A. 電車"
+},
+{
+"question": "單詞 'ferry' 的中文意思是？",
+"options": ["A. 電車", "B. 地鐵", "C. 渡輪", "D. 計程車"],
+"correctAnswer": "C. 渡輪"
+},
+{
+"question": "單詞 'firefighter' 的中文意思是？",
+"options": ["A. 警察", "B. 醫生", "C. 消防員", "D. 郵差"],
+"correctAnswer": "C. 消防員"
+},
+{
+"question": "單詞 'postman' 的中文意思是？",
+"options": ["A. 消防員", "B. 郵差", "C. 護士", "D. 老師"],
+"correctAnswer": "B. 郵差"
+},
+{
+"question": "單詞 'nurse' 的中文意思是？",
+"options": ["A. 護士", "B. 醫生", "C. 老師", "D. 警察"],
+"correctAnswer": "A. 護士"
+},
+{
+"question": "單詞 'policeman' 的中文意思是？",
+"options": ["A. 消防員", "B. 護士", "C. 警察", "D. 郵差"],
+"correctAnswer": "C. 警察"
+},
+{
+"question": "單詞 'teacher' 的中文意思是？",
+"options": ["A. 學生", "B. 老師", "C. 護士", "D. 醫生"],
+"correctAnswer": "B. 老師"
+},
+{
+"question": "單詞 'umbrella' 的中文意思是？",
+"options": ["A. 雨衣", "B. 雨傘", "C. 帽子", "D. 手套"],
+"correctAnswer": "B. 雨傘"
+},
+{
+"question": "單詞 'jacket' 的中文意思是？",
+"options": ["A. 外套", "B. 裙子", "C. 褲子", "D. 襯衫"],
+"correctAnswer": "A. 外套"
+},
+{
+"question": "單詞 'wallet' 的中文意思是？",
+"options": ["A. 書包", "B. 錢包", "C. 筆盒", "D. 背包"],
+"correctAnswer": "B. 錢包"
+},
+{
+"question": "單詞 'watch' 的中文意思是？",
+"options": ["A. 手錶", "B. 眼镜", "C. 帽子", "D. 手套"],
+"correctAnswer": "A. 手錶"
+},
+{
+"question": "單詞 'Easter' 的中文意思是？",
+"options": ["A. 聖誕節", "B. 復活節", "C. 中秋節", "D. 春節"],
+"correctAnswer": "B. 復活節"
+},
+{
+"question": "單詞 'Christmas' 的中文意思是？",
+"options": ["A. 復活節", "B. 中秋節", "C. 聖誕節", "D. 春節"],
+"correctAnswer": "C. 聖誕節"
+},
+{
+"question": "單詞 'park' 的中文意思是？",
+"options": ["A. 公園", "B. 圖書館", "C. 醫院", "D. 學校"],
+"correctAnswer": "A. 公園"
+},
+{
+"question": "單詞 'cinema' 的中文意思是？",
+"options": ["A. 劇院", "B. 電影院", "C. 圖書館", "D. 餐廳"],
+"correctAnswer": "B. 電影院"
+},
+{
+"question": "單詞 'restaurant' 的中文意思是？",
+"options": ["A. 餐廳", "B. 超市", "C. 學校", "D. 公園"],
+"correctAnswer": "A. 餐廳"
+},
+{
+"question": "單詞 'supermarket' 的中文意思是？",
+"options": ["A. 餐廳", "B. 超市", "C. 電影院", "D. 圖書館"],
+"correctAnswer": "B. 超市"
+},
+{
+"question": "單詞 'slide' 的中文意思是？（play on a slide）",
+"options": ["A. 鞦韆", "B. 溜滑梯", "C. 盪鞦韆", "D. 滑板車"],
+"correctAnswer": "B. 溜滑梯"
+},
+{
+"question": "單詞 'swing' 的中文意思是？（play on a swing）",
+"options": ["A. 溜滑梯", "B. 鞦韆", "C. 滑板車", "D. 盪鞦韆"],
+"correctAnswer": "B. 鞦韆"
+},
+{
+"question": "單詞 'scooter' 的中文意思是？（ride a scooter）",
+"options": ["A. 腳踏車", "B. 滑板車", "C. 溜滑梯", "D. 鞦韆"],
+"correctAnswer": "B. 滑板車"
+},
+{
+"question": "單詞 'picnic' 的中文意思是？（have a picnic）",
+"options": ["A. 露營", "B. 野餐", "C. 燒烤", "D. 露營"],
+"correctAnswer": "B. 野餐"
+},
+{
+"question": "單詞 'morning' 的中文意思是？",
+"options": ["A. 早上", "B. 下午", "C. 晚上", "D. 夜間"],
+"correctAnswer": "A. 早上"
+},
+{
+"question": "單詞 'afternoon' 的中文意思是？",
+"options": ["A. 早上", "B. 下午", "C. 晚上", "D. 夜間"],
+"correctAnswer": "B. 下午"
+},
+{
+"question": "單詞 'evening' 的中文意思是？",
+"options": ["A. 早上", "B. 下午", "C. 晚上", "D. 夜間"],
+"correctAnswer": "C. 晚上"
+},
+{
+"question": "單詞 'night' 的中文意思是？",
+"options": ["A. 早上", "B. 下午", "C. 晚上", "D. 夜間"],
+"correctAnswer": "D. 夜間"
+},
+{
+"question": "單詞 'sandwich' 的中文意思是？",
+"options": ["A. 漢堡", "B. 三明治", "C. 熱狗", "D. 披薩"],
+"correctAnswer": "B. 三明治"
+},
+{
+"question": "單詞 'juice' 的中文意思是？",
+"options": ["A. 牛奶", "B. 果汁", "C. 可樂", "D. 茶"],
+"correctAnswer": "B. 果汁"
+},
+{
+"question": "單詞 'mooncake' 的中文意思是？",
+"options": ["A. 月餅", "B. 蛋糕", "C. 餅乾", "D. 巧克力"],
+"correctAnswer": "A. 月餅"
+},
+{
+"question": "單詞 'lantern' 的中文意思是？",
+"options": ["A. 燈籠", "B. 蠟燭", "C. 燈泡", "D. 火把"],
+"correctAnswer": "A. 燈籠"
+},
+{
+"question": "單詞 'post office' 的中文意思是？",
+"options": ["A. 郵局", "B. 電話亭", "C. 銀行", "D. 醫院"],
+"correctAnswer": "A. 郵局"
+},
+{
+"question": "單詞 'clinic' 的中文意思是？",
+"options": ["A. 醫院", "B. 診所", "C. 學校", "D. 圖書館"],
+"correctAnswer": "B. 診所"
+},
+{
+"question": "單詞 'tuck shop' 的中文意思是？",
+"options": ["A. 超市", "B. 便利店", "C. 學校小賣部", "D. 餐廳"],
+"correctAnswer": "C. 學校小賣部"
+},
+{
+"question": "單詞 'hair clip' 的中文意思是？",
+"options": ["A. 梳子", "B. 髮夾", "C. 牙刷", "D. 毛巾"],
+"correctAnswer": "B. 髮夾"
+},
+{
+"question": "單詞 'glasses' 的中文意思是？",
+"options": ["A. 眼镜", "B. 手套", "C. 帽子", "D. 鞋子"],
+"correctAnswer": "A. 眼镜"
+},
+{
+"question": "單詞 'shopkeeper' 的中文意思是？",
+"options": ["A. 顧客", "B. 老闆", "C. 員工", "D. 學生"],
+"correctAnswer": "B. 老闆"
+},
+{
+"question": "單詞 'Chinese New Year' 的中文意思是？",
+"options": ["A. 中秋節", "B. 春節", "C. 聖誕節", "D. 復活節"],
+"correctAnswer": "B. 春節"
+},
+{
+"question": "單詞 'Mid-Autumn Festival' 的中文意思是？",
+"options": ["A. 春節", "B. 中秋節", "C. 復活節", "D. 聖誕節"],
+"correctAnswer": "B. 中秋節"
+},
+{
+"question": "單詞 'get up' 的中文意思是？",
+"options": ["A. 睡覺", "B. 起床", "C. 吃飯", "D. 上學"],
+"correctAnswer": "B. 起床"
+},
+{
+"question": "單詞 'go to school' 的中文意思是？",
+"options": ["A. 放學", "B. 上學", "C. 睡覺", "D. 吃飯"],
+"correctAnswer": "B. 上學"
+},
+{
+"question": "單詞 'taxi' 的中文意思是？",
+"options": ["A. 公車", "B. 計程車", "C. 地鐵", "D. 渡輪"],
+"correctAnswer": "B. 計程車"
+},
+{
+"question": "單詞 'MTR' 的中文意思是？",
+"options": ["A. 地鐵", "B. 電車", "C. 渡輪", "D. 計程車"],
+"correctAnswer": "A. 地鐵"
+}
+  ],
+
+
+
+  // 類別3：小三單詞 (110題)
+    category3: [
+  
+{
+"question": "單詞 'naughty' 的中文意思是？",
+"options": ["A. 聽話的", "B. 調皮的", "C. 聰明的", "D. 膽小的"],
+"correctAnswer": "B. 調皮的"
+},
+{
+"question": "單詞 'careless' 的中文意思是？",
+"options": ["A. 仔細的", "B. 粗心的", "C. 認真的", "D. 謹慎的"],
+"correctAnswer": "B. 粗心的"
+},
+{
+"question": "單詞 'brave' 的中文意思是？",
+"options": ["A. 勇敢的", "B. 膽小的", "C. 內向的", "D. 活潑的"],
+"correctAnswer": "A. 勇敢的"
+},
+{
+"question": "單詞 'timid' 的中文意思是？",
+"options": ["A. 勇敢的", "B. 膽小的", "C. 驕傲的", "D. 謙虛的"],
+"correctAnswer": "B. 膽小的"
+},
+{
+"question": "單詞 'foolish' 的中文意思是？",
+"options": ["A. 聰明的", "B. 愚蠢的", "C. 勤奮的", "D. 懶惰的"],
+"correctAnswer": "B. 愚蠢的"
+},
+{
+"question": "單詞 'clever' 的中文意思是？",
+"options": ["A. 愚蠢的", "B. 聰明的", "C. 笨拙的", "D. 遲鈍的"],
+"correctAnswer": "B. 聰明的"
+},
+{
+"question": "單詞 'rich' 的中文意思是？",
+"options": ["A. 富裕的", "B. 窮困的", "C. 快樂的", "D. 悲傷的"],
+"correctAnswer": "A. 富裕的"
+},
+{
+"question": "單詞 'poor' 的中文意思是？",
+"options": ["A. 富裕的", "B. 窮困的", "C. 健康的", "D. 生病的"],
+"correctAnswer": "B. 窮困的"
+},
+{
+"question": "單詞 'ugly' 的中文意思是？",
+"options": ["A. 美麗的", "B. 醜陋的", "C. 可愛的", "D. 討厭的"],
+"correctAnswer": "B. 醜陋的"
+},
+{
+"question": "單詞 'beautiful' 的中文意思是？",
+"options": ["A. 醜陋的", "B. 美麗的", "C. 普通的", "D. 奇怪的"],
+"correctAnswer": "B. 美麗的"
+},
+{
+"question": "單詞 'disappear' 的中文意思是？",
+"options": ["A. 出現", "B. 消失", "C. 到達", "D. 離開"],
+"correctAnswer": "B. 消失"
+},
+{
+"question": "單詞 'appear' 的中文意思是？",
+"options": ["A. 出現", "B. 消失", "C. 掉落", "D. 尋找"],
+"correctAnswer": "A. 出現"
+},
+{
+"question": "單詞 'arrive' 的中文意思是？",
+"options": ["A. 出發", "B. 到達", "C. 等待", "D. 離開"],
+"correctAnswer": "B. 到達"
+},
+{
+"question": "單詞 'drop' 的中文意思是？",
+"options": ["A. 撿起", "B. 掉落", "C. 放置", "D. 拿取"],
+"correctAnswer": "B. 掉落"
+},
+{
+"question": "單詞 'leave' 的中文意思是？",
+"options": ["A. 到達", "B. 離開", "C. 停留", "D. 等待"],
+"correctAnswer": "B. 離開"
+},
+{
+"question": "單詞 'find' 的中文意思是？",
+"options": ["A. 丟失", "B. 尋找", "C. 找到", "D. 隱藏"],
+"correctAnswer": "C. 找到"
+},
+{
+"question": "單詞 'argue' 的中文意思是？",
+"options": ["A. 同意", "B. 爭吵", "C. 討論", "D. 傾聽"],
+"correctAnswer": "B. 爭吵"
+},
+{
+"question": "單詞 'fight' 的中文意思是？",
+"options": ["A. 和平", "B. 打架", "C. 合作", "D. 幫助"],
+"correctAnswer": "B. 打架"
+},
+{
+"question": "單詞 'listen' 的中文意思是？",
+"options": ["A. 說話", "B. 傾聽", "C. 喊叫", "D. 大笑"],
+"correctAnswer": "B. 傾聽"
+},
+{
+"question": "單詞 'talk' 的中文意思是？",
+"options": ["A. 傾聽", "B. 說話", "C. 哭泣", "D. 微笑"],
+"correctAnswer": "B. 說話"
+},
+{
+"question": "單詞 'shout' 的中文意思是？",
+"options": ["A. 輕語", "B. 喊叫", "C. 唱歌", "D. 朗讀"],
+"correctAnswer": "B. 喊叫"
+},
+{
+"question": "單詞 'laugh' 的中文意思是？",
+"options": ["A. 哭泣", "B. 大笑", "C. 生氣", "D. 害怕"],
+"correctAnswer": "B. 大笑"
+},
+{
+"question": "單詞 'practise' 的中文意思是？",
+"options": ["A. 放棄", "B. 練習", "C. 忘記", "D. 學習"],
+"correctAnswer": "B. 練習"
+},
+{
+"question": "單詞 'tidy' 的中文意思是？",
+"options": ["A. 打掃", "B. 凌亂", "C. 整理", "D. 丟棄"],
+"correctAnswer": "C. 整理"
+},
+{
+"question": "單詞 'study' 的中文意思是？",
+"options": ["A. 玩耍", "B. 學習", "C. 工作", "D. 休息"],
+"correctAnswer": "B. 學習"
+},
+{
+"question": "單詞 'chat' 的中文意思是？",
+"options": ["A. 爭吵", "B. 聊天", "C. 爭論", "D. 抱怨"],
+"correctAnswer": "B. 聊天"
+},
+{
+"question": "單詞 'watch' 的中文意思是？",
+"options": ["A. 看", "B. 聽", "C. 聞", "D. 嘗"],
+"correctAnswer": "A. 看"
+},
+{
+"question": "單詞 'make' 的中文意思是？",
+"options": ["A. 破壞", "B. 製作", "C. 丟失", "D. 找到"],
+"correctAnswer": "B. 製作"
+},
+{
+"question": "單詞 'take' 的中文意思是？",
+"options": ["A. 給予", "B. 拿取", "C. 拒絕", "D. 接受"],
+"correctAnswer": "B. 拿取"
+},
+{
+"question": "單詞 'give' 的中文意思是？",
+"options": ["A. 拿取", "B. 給予", "C. 借貸", "D. 償還"],
+"correctAnswer": "B. 給予"
+},
+{
+"question": "單詞 'get' 的中文意思是？",
+"options": ["A. 丟失", "B. 得到", "C. 放棄", "D. 尋找"],
+"correctAnswer": "B. 得到"
+},
+{
+"question": "單詞 'eat' 的中文意思是？",
+"options": ["A. 喝", "B. 吃", "C. 煮", "D. 切"],
+"correctAnswer": "B. 吃"
+},
+{
+"question": "單詞 'drink' 的中文意思是？",
+"options": ["A. 吃", "B. 喝", "C. 燒", "D. 炸"],
+"correctAnswer": "B. 喝"
+},
+{
+"question": "單詞 'go' 的中文意思是？",
+"options": ["A. 來", "B. 去", "C. 停", "D. 跑"],
+"correctAnswer": "B. 去"
+},
+{
+"question": "單詞 'come' 的中文意思是？",
+"options": ["A. 去", "B. 來", "C. 走", "D. 跳"],
+"correctAnswer": "B. 來"
+},
+{
+"question": "單詞 'run' 的中文意思是？",
+"options": ["A. 走", "B. 跑", "C. 跳", "D. 爬"],
+"correctAnswer": "B. 跑"
+},
+{
+"question": "單詞 'swim' 的中文意思是？",
+"options": ["A. 游泳", "B. 跑步", "C. 跳躍", "D. 飛翔"],
+"correctAnswer": "A. 游泳"
+},
+{
+"question": "單詞 'ride' 的中文意思是？",
+"options": ["A. 騎", "B. 推", "C. 拉", "D. 打"],
+"correctAnswer": "A. 騎"
+},
+{
+"question": "單詞 'fly' 的中文意思是？",
+"options": ["A. 跑", "B. 跳", "C. 飛", "D. 游"],
+"correctAnswer": "C. 飛"
+},
+{
+"question": "單詞 'draw' 的中文意思是？",
+"options": ["A. 寫", "B. 畫", "C. 讀", "D. 說"],
+"correctAnswer": "B. 畫"
+},
+{
+"question": "單詞 'write' 的中文意思是？",
+"options": ["A. 畫", "B. 寫", "C. 讀", "D. 聽"],
+"correctAnswer": "B. 寫"
+},
+{
+"question": "單詞 'read' 的中文意思是？",
+"options": ["A. 寫", "B. 畫", "C. 讀", "D. 說"],
+"correctAnswer": "C. 讀"
+},
+{
+"question": "單詞 'cut' 的中文意思是？",
+"options": ["A. 切", "B. 粘", "C. 折", "D. 撕"],
+"correctAnswer": "A. 切"
+},
+{
+"question": "單詞 'put' 的中文意思是？",
+"options": ["A. 拿", "B. 放", "C. 丟", "D. 捡"],
+"correctAnswer": "B. 放"
+},
+{
+"question": "單詞 'skip' 的中文意思是？",
+"options": ["A. 跳繩", "B. 跑步", "C. 游泳", "D. 騎車"],
+"correctAnswer": "A. 跳繩"
+},
+{
+"question": "單詞 'hike' 的中文意思是？",
+"options": ["A. 露營", "B. 遠足", "C. 釣魚", "D. 露營"],
+"correctAnswer": "B. 遠足"
+},
+{
+"question": "單詞 'hide' 的中文意思是？",
+"options": ["A. 隱藏", "B. 尋找", "C. 出現", "D. 消失"],
+"correctAnswer": "A. 隱藏"
+},
+{
+"question": "單詞 'exchange' 的中文意思是？",
+"options": ["A. 交換", "B. 購買", "C. 銷售", "D. 贈送"],
+"correctAnswer": "A. 交換"
+},
+{
+"question": "單詞 'win' 的中文意思是？",
+"options": ["A. 輸", "B. 贏", "C. 平局", "D. 放棄"],
+"correctAnswer": "B. 贏"
+},
+{
+"question": "單詞 'lose' 的中文意思是？",
+"options": ["A. 贏", "B. 輸", "C. 贏得", "D. 獲得"],
+"correctAnswer": "B. 輸"
+},
+{
+"question": "單詞 'break' 的中文意思是？",
+"options": ["A. 修理", "B. 打破", "C. 製作", "D. 購買"],
+"correctAnswer": "B. 打破"
+},
+{
+"question": "單詞 'catch' 的中文意思是？",
+"options": ["A. 丟擲", "B. 接住", "C. 放棄", "D. 尋找"],
+"correctAnswer": "B. 接住"
+},
+{
+"question": "單詞 'teach' 的中文意思是？",
+"options": ["A. 學習", "B. 教導", "C. 工作", "D. 玩耍"],
+"correctAnswer": "B. 教導"
+},
+{
+"question": "單詞 'learn' 的中文意思是？",
+"options": ["A. 教導", "B. 學習", "C. 忘記", "D. 記得"],
+"correctAnswer": "B. 學習"
+},
+{
+"question": "單詞 'think' 的中文意思是？",
+"options": ["A. 說話", "B. 思考", "C. 聽力", "D. 視力"],
+"correctAnswer": "B. 思考"
+},
+{
+"question": "單詞 'feel' 的中文意思是？",
+"options": ["A. 感覺", "B. 看見", "C. 聽見", "D. 聞到"],
+"correctAnswer": "A. 感覺"
+},
+{
+"question": "單詞 'hear' 的中文意思是？",
+"options": ["A. 看見", "B. 聽見", "C. 聞到", "D. 嘗到"],
+"correctAnswer": "B. 聽見"
+},
+{
+"question": "單詞 'see' 的中文意思是？",
+"options": ["A. 聽見", "B. 看見", "C. 聞到", "D. 嘗到"],
+"correctAnswer": "B. 看見"
+},
+{
+"question": "單詞 'meet' 的中文意思是？",
+"options": ["A. 離開", "B. 遇見", "C. 等待", "D. 尋找"],
+"correctAnswer": "B. 遇見"
+},
+{
+"question": "單詞 'buy' 的中文意思是？",
+"options": ["A. 銷售", "B. 購買", "C. 贈送", "D. 交換"],
+"correctAnswer": "B. 購買"
+},
+{
+"question": "單詞 'build' 的中文意思是？",
+"options": ["A. 拆毀", "B. 建造", "C. 購買", "D. 銷售"],
+"correctAnswer": "B. 建造"
+},
+{
+"question": "單詞 'sweep' 的中文意思是？",
+"options": ["A. 掃地", "B. 拖地", "C. 擦窗", "D. 洗碗"],
+"correctAnswer": "A. 掃地"
+},
+
+{
+"question": "單詞 'crafts' 的中文意思是？",
+"options": ["A.手工", "B.模型", "C.樂器", "D.遊戲"],
+"correctAnswer": "A.手工"
+},
+{
+"question": "單詞 'models' 的中文意思是？",
+"options": ["A.手工", "B.模型", "C.圖畫", "D.歌曲"],
+"correctAnswer": "B.模型"
+},
+{
+"question": "單詞 'violin' 的中文意思是？",
+"options": ["A.鋼琴", "B.吉他", "C.小提琴", "D.鼓"],
+"correctAnswer": "C.小提琴"
+},
+{
+"question": "單詞 'sausage' 的中文意思是？",
+"options": ["A.火腿", "B.培根", "C.牛肉", "D.香腸"],
+"correctAnswer": "D.香腸"
+},
+{
+"question": "單詞 'ketchup' 的中文意思是？",
+"options": ["A.番茄醬", "B.沙拉醬", "C.芥末醬", "D.醬油"],
+"correctAnswer": "A.番茄醬"
+},
+{
+"question": "單詞 'mushroom' 的中文意思是？",
+"options": ["A.土豆", "B.番茄", "C.蘑菇", "D.洋蔥"],
+"correctAnswer": "C.蘑菇"
+},
+{
+"question": "單詞 'tuna' 的中文意思是？",
+"options": ["A.三文魚", "B.金槍魚", "C.鱈魚", "D.鱸魚"],
+"correctAnswer": "B.金槍魚"
+},
+{
+"question": "單詞 'lettuce' 的中文意思是？",
+"options": ["A.白菜", "B.菠菜", "C.芹菜", "D.生菜"],
+"correctAnswer": "D.生菜"
+},
+{
+"question": "單詞 'celery' 的中文意思是？",
+"options": ["A.生菜", "B.芹菜", "C.胡蘿蔔", "D.黃瓜"],
+"correctAnswer": "B.芹菜"
+},
+{
+"question": "單詞 'carrot' 的中文意思是？",
+"options": ["A.胡蘿蔔", "B.土豆", "C.番茄", "D.洋蔥"],
+"correctAnswer": "A.胡蘿蔔"
+},
+{
+"question": "單詞 'sweep' 的中文意思是？",
+"options": ["A.拖地", "B.掃地", "C.擦窗", "D.洗碗"],
+"correctAnswer": "B.掃地"
+},
+{
+"question": "單詞 'mop' 的中文意思是？",
+"options": ["A.掃地", "B.拖地", "C.擦桌", "D.洗衣"],
+"correctAnswer": "B.拖地"
+},
+{
+"question": "單詞 'dust' 的中文意思是？",
+"options": ["A.除塵", "B.澆水", "C.折疊", "D.擺放"],
+"correctAnswer": "A.除塵"
+},
+{
+"question": "單詞 'fold' 的中文意思是？",
+"options": ["A.折疊", "B.洗滌", "C.晾曬", "D.熨燙"],
+"correctAnswer": "A.折疊"
+},
+{
+"question": "單詞 'water' 的中文意思是？（澆花）",
+"options": ["A.喝水", "B.澆水", "C.放水", "D.裝水"],
+"correctAnswer": "B.澆水"
+},
+{
+"question": "單詞 'tidy' 的中文意思是？",
+"options": ["A.打掃", "B.整理", "C.丟棄", "D.尋找"],
+"correctAnswer": "B.整理"
+},
+{
+"question": "單詞 'set' 的中文意思是？（擺餐具）",
+"options": ["A.擺放", "B.拿起", "C.放下", "D.清洗"],
+"correctAnswer": "A.擺放"
+},
+{
+"question": "單詞 'collect' 的中文意思是？",
+"options": ["A.收集", "B.分發", "C.購買", "D.贈送"],
+"correctAnswer": "A.收集"
+},
+{
+"question": "單詞 'practise' 的中文意思是？",
+"options": ["A.學習", "B.練習", "C.忘記", "D.記住"],
+"correctAnswer": "B.練習"
+},
+{
+"question": "單詞 'perform' 的中文意思是？",
+"options": ["A.表演", "B.觀看", "C.欣賞", "D.評論"],
+"correctAnswer": "A.表演"
+},
+{
+"question": "單詞 'compete' 的中文意思是？",
+"options": ["A.比賽", "B.合作", "C.遊戲", "D.工作"],
+"correctAnswer": "A.比賽"
+},
+{
+"question": "單詞 'hobby' 的中文意思是？",
+"options": ["A.愛好", "B.作業", "C.考試", "D.課程"],
+"correctAnswer": "A.愛好"
+},
+{
+"question": "單詞 'subject' 的中文意思是？",
+"options": ["A.主題", "B.學科", "C.題目", "D.對象"],
+"correctAnswer": "B.學科"
+},
+{
+"question": "單詞 'event' 的中文意思是？",
+"options": ["A.事件", "B.活動", "C.節日", "D.聚會"],
+"correctAnswer": "B.活動"
+},
+{
+"question": "單詞 'talent' 的中文意思是？",
+"options": ["A.才能", "B.勇氣", "C.智慧", "D.善良"],
+"correctAnswer": "A.才能"
+},
+{
+"question": "單詞 'brave' 的中文意思是？",
+"options": ["A.勇敢的", "B.膽小的", "C.善良的", "D.邪惡的"],
+"correctAnswer": "A.勇敢的"
+},
+{
+"question": "單詞 'evil' 的中文意思是？",
+"options": ["A.善良的", "B.邪惡的", "C.勇敢的", "D.聰明的"],
+"correctAnswer": "B.邪惡的"
+},
+{
+"question": "單詞 'kind' 的中文意思是？",
+"options": ["A.善良的", "B.邪惡的", "C.自私的", "D.小氣的"],
+"correctAnswer": "A.善良的"
+},
+{
+"question": "單詞 'ugly' 的中文意思是？",
+"options": ["A.美麗的", "B.丑陋的", "C.可愛的", "D.帥氣的"],
+"correctAnswer": "B.丑陋的"
+},
+{
+"question": "單詞 'castle' 的中文意思是？",
+"options": ["A.城堡", "B.宮殿", "C.小屋", "D.村莊"],
+"correctAnswer": "A.城堡"
+},
+{
+"question": "單詞 'fountain' 的中文意思是？",
+"options": ["A.噴泉", "B.河流", "C.湖泊", "D.池塘"],
+"correctAnswer": "A.噴泉"
+},
+{
+"question": "單詞 'forest' 的中文意思是？",
+"options": ["A.森林", "B.草原", "C.沙漠", "D.山脈"],
+"correctAnswer": "A.森林"
+},
+{
+"question": "單詞 'garden' 的中文意思是？",
+"options": ["A.花園", "B.果園", "C.菜園", "D.公園"],
+"correctAnswer": "A.花園"
+},
+{
+"question": "單詞 'ham' 的中文意思是？",
+"options": ["A.火腿", "B.香腸", "C.培根", "D.牛肉"],
+"correctAnswer": "A.火腿"
+},
+{
+"question": "單詞 'hot dog' 的中文意思是？",
+"options": ["A.熱狗", "B.漢堡", "C.三明治", "D.披薩"],
+"correctAnswer": "A.熱狗"
+},
+{
+"question": "單詞 'butter' 的中文意思是？",
+"options": ["A.黃油", "B.奶酪", "C.奶油", "D.沙拉醬"],
+"correctAnswer": "A.黃油"
+},
+{
+"question": "單詞 'tomato' 的中文意思是？",
+"options": ["A.番茄", "B.土豆", "C.胡蘿蔔", "D.洋蔥"],
+"correctAnswer": "A.番茄"
+},
+{
+"question": "單詞 'sandwich' 的中文意思是？",
+"options": ["A.三明治", "B.漢堡", "C.熱狗", "D.披薩"],
+"correctAnswer": "A.三明治"
+},
+{
+"question": "單詞 'spaghetti' 的中文意思是？",
+"options": ["A.麵條", "B.意大利麵", "C.米粉", "D.拉麵"],
+"correctAnswer": "B.意大利麵"
+},
+{
+"question": "單詞 'noodles' 的中文意思是？",
+"options": ["A.意大利麵", "B.麵條", "C.米粉", "D.拉麵"],
+"correctAnswer": "B.麵條"
+},
+{
+"question": "單詞 'pizza' 的中文意思是？",
+"options": ["A.披薩", "B.三明治", "C.漢堡", "D.熱狗"],
+"correctAnswer": "A.披薩"
+},
+{
+"question": "單詞 'cake' 的中文意思是？",
+"options": ["A.蛋糕", "B.餅乾", "C.麵包", "D.點心"],
+"correctAnswer": "A.蛋糕"
+},
+{
+"question": "單詞 'juice' 的中文意思是？",
+"options": ["A.果汁", "B.可樂", "C.牛奶", "D.茶"],
+"correctAnswer": "A.果汁"
+},
+{
+"question": "單詞 'cola' 的中文意思是？",
+"options": ["A.可樂", "B.果汁", "C.牛奶", "D.咖啡"],
+"correctAnswer": "A.可樂"
+},
+{
+"question": "單詞 'milk' 的中文意思是？",
+"options": ["A.牛奶", "B.果汁", "C.可樂", "D.茶"],
+"correctAnswer": "A.牛奶"
+},
+{
+"question": "單詞 'tea' 的中文意思是？",
+"options": ["A.茶", "B.咖啡", "C.牛奶", "D.果汁"],
+"correctAnswer": "A.茶"
+},
+{
+"question": "單詞 'coffee' 的中文意思是？",
+"options": ["A.咖啡", "B.茶", "C.牛奶", "D.可樂"],
+"correctAnswer": "A.咖啡"
+},
+{
+"question": "單詞 'marshmallow' 的中文意思是？",
+"options": ["A.棉花糖", "B.巧克力", "C.糖果", "D.果凍"],
+"correctAnswer": "A.棉花糖"
+},
+{
+"question": "單詞 'chicken wing' 的中文意思是？",
+"options": ["A.雞翅", "B.雞腿", "C.雞胸", "D.雞爪"],
+"correctAnswer": "A.雞翅"
+},
+{
+"question": "單詞 'seafood' 的中文意思是？",
+"options": ["A.肉類", "B.海鮮", "C.蔬菜", "D.水果"],
+"correctAnswer": "B.海鮮"
+},
+{
+"question": "單詞 'vegetable' 的中文意思是？",
+"options": ["A.水果", "B.蔬菜", "C.肉類", "D.海鮮"],
+"correctAnswer": "B.蔬菜"
+},
+{
+"question": "單詞 'fruit' 的中文意思是？",
+"options": ["A.水果", "B.蔬菜", "C.肉類", "D.海鮮"],
+"correctAnswer": "A.水果"
+},
+{
+"question": "單詞 'bread' 的中文意思是？",
+"options": ["A.麵包", "B.蛋糕", "C.餅乾", "D.點心"],
+"correctAnswer": "A.麵包"
+},
+{
+"question": "單詞 'egg' 的中文意思是？",
+"options": ["A.雞蛋", "B.鴨蛋", "C.鵝蛋", "D.鳥蛋"],
+"correctAnswer": "A.雞蛋"
+},
+{
+"question": "單詞 'potato' 的中文意思是？",
+"options": ["A.土豆", "B.番茄", "C.胡蘿蔔", "D.洋蔥"],
+"correctAnswer": "A.土豆"
+},
+{
+"question": "單詞 'onion' 的中文意思是？",
+"options": ["A.洋蔥", "B.土豆", "C.番茄", "D.胡蘿蔔"],
+"correctAnswer": "A.洋蔥"
+},
+{
+"question": "單詞 'garlic' 的中文意思是？",
+"options": ["A.大蒜", "B.生薑", "C.洋蔥", "D.土豆"],
+"correctAnswer": "A.大蒜"
+},
+{
+"question": "單詞 'ginger' 的中文意思是？",
+"options": ["A.生薑", "B.大蒜", "C.洋蔥", "D.胡蘿蔔"],
+"correctAnswer": "A.生薑"
+},
+{
+"question": "單詞 'cucumber' 的中文意思是？",
+"options": ["A.黃瓜", "B.胡蘿蔔", "C.番茄", "D.洋蔥"],
+"correctAnswer": "A.黃瓜"
+},
+{
+"question": "單詞 'yogurt' 的中文意思是？",
+"options": ["A.酸奶", "B.牛奶", "C.奶油", "D.奶酪"],
+"correctAnswer": "A.酸奶"
+},
+{
+"question": "單詞 'cheese' 的中文意思是？",
+"options": ["A.奶酪", "B.黃油", "C.奶油", "D.酸奶"],
+"correctAnswer": "A.奶酪"
+},
+{
+"question": "單詞 'cupboard' 的中文意思是？",
+"options": ["A.衣櫃", "B.櫥櫃", "C.書櫃", "D.鞋櫃"],
+"correctAnswer": "B.櫥櫃"
+},
+{
+"question": "單詞 'fridge' 的中文意思是？",
+"options": ["A.冰櫃", "B.烤箱", "C.微波爐", "D.冰箱"],
+"correctAnswer": "D.冰箱"
+},
+{
+"question": "單詞 'air conditioner' 的中文意思是？",
+"options": ["A.電風扇", "B.空調", "C.暖氣", "D.除濕機"],
+"correctAnswer": "B.空調"
+},
+{
+"question": "單詞 'shelf' 的中文意思是？",
+"options": ["A.抽屜", "B.架子", "C.箱子", "D.盒子"],
+"correctAnswer": "B.架子"
+},
+{
+"question": "單詞 'sofa' 的中文意思是？",
+"options": ["A.椅子", "B.沙發", "C.凳子", "D.沙灘椅"],
+"correctAnswer": "B.沙發"
+}
+
+  ],
+
+
+
+  // 類別4：小四單詞 (85題)
+    category4: [
+    
+{
+"question": "單詞 'hamster' 的中文意思是？",
+"options": ["A. 倉鼠", "B. 兔子", "C. 老鼠", "D. 松鼠"],
+"correctAnswer": "A. 倉鼠"
+},
+{
+"question": "單詞 'cycling' 的中文意思是？",
+"options": ["A. 游泳", "B. 騎行", "C. 跑步", "D. 跳繩"],
+"correctAnswer": "B. 騎行"
+},
+{
+"question": "單詞 'jogging' 的中文意思是？",
+"options": ["A. 快跑", "B. 跳遠", "C. 慢跑", "D. 跳高"],
+"correctAnswer": "C. 慢跑"
+},
+{
+"question": "單詞 'volleyball' 的中文意思是？",
+"options": ["A. 籃球", "B. 足球", "C. 網球", "D. 排球"],
+"correctAnswer": "D. 排球"
+},
+{
+"question": "單詞 'museum' 的中文意思是？",
+"options": ["A. 博物館", "B. 圖書館", "C. 體育館", "D. 醫院"],
+"correctAnswer": "A. 博物館"
+},
+{
+"question": "單詞 'apartment' 的中文意思是？",
+"options": ["A. 房子", "B. 公寓", "C. 別墅", "D. 帳篷"],
+"correctAnswer": "B. 公寓"
+},
+{
+"question": "單詞 'picnic' 的中文意思是？",
+"options": ["A. 燒烤", "B. 露營", "C. 野餐", "D. 旅行"],
+"correctAnswer": "C. 野餐"
+},
+{
+"question": "單詞 'concert' 的中文意思是？",
+"options": ["A. 電影", "B. 戲劇", "C. 演講", "D. 音樂會"],
+"correctAnswer": "D. 音樂會"
+},
+{
+"question": "單詞 'competition' 的中文意思是？",
+"options": ["A. 比賽", "B. 遊戲", "C. 聚會", "D. 活動"],
+"correctAnswer": "A. 比賽"
+},
+{
+"question": "單詞 'dessert' 的中文意思是？",
+"options": ["A. 主食", "B. 甜點", "C. 飲料", "D. 水果"],
+"correctAnswer": "B. 甜點"
+},
+{
+"question": "單詞 'milkshake' 的中文意思是？",
+"options": ["A. 牛奶", "B. 優格", "C. 奶昔", "D. 果汁"],
+"correctAnswer": "C. 奶昔"
+},
+{
+"question": "單詞 'durian' 的中文意思是？",
+"options": ["A. 芒果", "B. 鳳梨", "C. 荔枝", "D. 榴槤"],
+"correctAnswer": "D. 榴槤"
+},
+{
+"question": "單詞 'cereal' 的中文意思是？",
+"options": ["A. 麥片", "B. 麵包", "C. 米飯", "D. 麵條"],
+"correctAnswer": "A. 麥片"
+},
+{
+"question": "單詞 'yoghurt' 的中文意思是？",
+"options": ["A. 起司", "B. 優格", "C. 黃油", "D. 奶油"],
+"correctAnswer": "B. 優格"
+},
+{
+"question": "單詞 'pasta' 的中文意思是？",
+"options": ["A. 麵包", "B. 披薩", "C. 義大利麵", "D. 漢堡"],
+"correctAnswer": "C. 義大利麵"
+},
+{
+"question": "單詞 'broccoli' 的中文意思是？",
+"options": ["A. 菠菜", "B. 生菜", "C. 黃瓜", "D. 西蘭花"],
+"correctAnswer": "D. 西蘭花"
+},
+{
+"question": "單詞 'lettuce' 的中文意思是？",
+"options": ["A. 生菜", "B. 白菜", "C. 青菜", "D. 芹菜"],
+"correctAnswer": "A. 生菜"
+},
+{
+"question": "單詞 'baked' 的中文意思是？",
+"options": ["A. 煮的", "B. 烤的", "C. 炸的", "D. 蒸的"],
+"correctAnswer": "B. 烤的"
+},
+{
+"question": "單詞 'visited' 的中文意思是？",
+"options": ["A. 邀請", "B. 遇見", "C. 拜訪", "D. 認識"],
+"correctAnswer": "C. 拜訪"
+},
+{
+"question": "單詞 'climbed' 的中文意思是？",
+"options": ["A. 跳", "B. 跑", "C. 走", "D. 爬"],
+"correctAnswer": "D. 爬"
+},
+{
+"question": "單詞 'practised' 的中文意思是？",
+"options": ["A. 練習", "B. 學習", "C. 教授", "D. 忘記"],
+"correctAnswer": "A. 練習"
+},
+{
+"question": "單詞 'tidied' 的中文意思是？",
+"options": ["A. 打掃", "B. 整理", "C. 清洗", "D. 修理"],
+"correctAnswer": "B. 整理"
+},
+{
+"question": "單詞 'hiked' 的中文意思是？",
+"options": ["A. 滑雪", "B. 衝浪", "C. 徒步", "D. 潛水"],
+"correctAnswer": "C. 徒步"
+},
+{
+"question": "單詞 'ordered' 的中文意思是？",
+"options": ["A. 購買", "B. 贈送", "C. 接受", "D. 訂購"],
+"correctAnswer": "D. 訂購"
+},
+{
+"question": "單詞 'prepared' 的中文意思是？",
+"options": ["A. 準備", "B. 享受", "C. 放棄", "D. 開始"],
+"correctAnswer": "A. 準備"
+},
+{
+"question": "單詞 'exercised' 的中文意思是？",
+"options": ["A. 休息", "B. 鍛鍊", "C. 工作", "D. 玩耍"],
+"correctAnswer": "B. 鍛鍊"
+},
+{
+"question": "單詞 'performed' 的中文意思是？",
+"options": ["A. 觀看", "B. 欣賞", "C. 表演", "D. 評論"],
+"correctAnswer": "C. 表演"
+},
+{
+"question": "單詞 'gentle' 的中文意思是？",
+"options": ["A. 粗魯的", "B. 嚴肅的", "C. 活潑的", "D. 溫和的"],
+"correctAnswer": "D. 溫和的"
+},
+{
+"question": "單詞 'useful' 的中文意思是？",
+"options": ["A. 有用的", "B. 無用的", "C. 有趣的", "D. 無聊的"],
+"correctAnswer": "A. 有用的"
+},
+{
+"question": "單詞 'special' 的中文意思是？",
+"options": ["A. 普通的", "B. 特別的", "C. 簡單的", "D. 複雜的"],
+"correctAnswer": "B. 特別的"
+},
+{
+"question": "單詞 'difficult' 的中文意思是？",
+"options": ["A. 簡單的", "B. 容易的", "C. 困難的", "D. 有趣的"],
+"correctAnswer": "C. 困難的"
+},
+{
+"question": "單詞 'popular' 的中文意思是？",
+"options": ["A. 不受歡迎的", "B. 稀有的", "C. 常見的", "D. 受歡迎的"],
+"correctAnswer": "D. 受歡迎的"
+},
+{
+"question": "單詞 'expensive' 的中文意思是？",
+"options": ["A. 昂貴的", "B. 便宜的", "C. 美麗的", "D. 醜陋的"],
+"correctAnswer": "A. 昂貴的"
+},
+{
+"question": "單詞 'interesting' 的中文意思是？",
+"options": ["A. 無聊的", "B. 有趣的", "C. 悲傷的", "D. 快樂的"],
+"correctAnswer": "B. 有趣的"
+},
+{
+"question": "單詞 'tired' 的中文意思是？",
+"options": ["A. 興奮的", "B. 憤怒的", "C. 疲憊的", "D. 開心的"],
+"correctAnswer": "C. 疲憊的"
+},
+{
+"question": "單詞 'spicy' 的中文意思是？",
+"options": ["A. 甜的", "B. 酸的", "C. 鹹的", "D. 辣的"],
+"correctAnswer": "D. 辣的"
+},
+{
+"question": "單詞 'across' 的中文意思是？",
+"options": ["A. 穿過", "B. 旁邊", "C. 後面", "D. 前面"],
+"correctAnswer": "A. 穿過"
+},
+{
+"question": "單詞 'opposite' 的中文意思是？",
+"options": ["A. 旁邊", "B. 對面", "C. 附近", "D. 遠處"],
+"correctAnswer": "B. 對面"
+},
+{
+"question": "單詞 'straight' 的中文意思是？",
+"options": ["A. 彎曲的", "B. 斜的", "C. 直的", "D. 圓的"],
+"correctAnswer": "C. 直的"
+},
+{
+"question": "單詞 'ahead' 的中文意思是？",
+"options": ["A. 在後面", "B. 在左邊", "C. 在右邊", "D. 在前面"],
+"correctAnswer": "D. 在前面"
+},
+{
+"question": "單詞 'ought' 的中文意思是？",
+"options": ["A. 應該", "B. 能夠", "C. 必須", "D. 可能"],
+"correctAnswer": "A. 應該"
+},
+{
+"question": "單詞 'frequency' 的中文意思是？",
+"options": ["A. 速度", "B. 頻率", "C. 時間", "D. 距離"],
+"correctAnswer": "B. 頻率"
+},
+{
+"question": "單詞 'uncountable' 的中文意思是？",
+"options": ["A. 可數的", "B. 數量多的", "C. 不可數的", "D. 數量少的"],
+"correctAnswer": "C. 不可數的"
+},
+{
+"question": "單詞 'countable' 的中文意思是？",
+"options": ["A. 不可數的", "B. 重要的", "C. 不重要的", "D. 可數的"],
+"correctAnswer": "D. 可數的"
+},
+{
+"question": "單詞 'comparative' 的中文意思是？",
+"options": ["A. 比較級", "B. 原級", "C. 最高級", "D. 形容詞"],
+"correctAnswer": "A. 比較級"
+},
+{
+"question": "單詞 'irregular' 的中文意思是？",
+"options": ["A. 規則的", "B. 不規則的", "C. 簡單的", "D. 複雜的"],
+"correctAnswer": "B. 不規則的"
+},
+{
+"question": "單詞 'reflexive' 的中文意思是？",
+"options": ["A. 主動的", "B. 被動的", "C. 反身的", "D. 情態的"],
+"correctAnswer": "C. 反身的"
+},
+{
+"question": "單詞 'prepositional' 的中文意思是？",
+"options": ["A. 代詞的", "B. 名詞的", "C. 動詞的", "D. 介詞的"],
+"correctAnswer": "D. 介詞的"
+},
+{
+"question": "單詞 'modal' 的中文意思是？",
+"options": ["A. 情態的", "B. 時態的", "C. 語態的", "D. 句式的"],
+"correctAnswer": "A. 情態的"
+},
+{
+"question": "單詞 'timetable' 的中文意思是？",
+"options": ["A. 日曆", "B. 時間表", "C. 地圖", "D. 菜單"],
+"correctAnswer": "B. 時間表"
+},
+{
+"question": "單詞 'jigsaw' 的中文意思是？",
+"options": ["A. 拼圖", "B. 積木", "C. 象棋", "D. 跳棋"],
+"correctAnswer": "A. 拼圖"
+},
+{
+"question": "單詞 'karate' 的中文意思是？",
+"options": ["A. 跆拳道", "B. 空手道", "C. 柔道", "D. 拳擊"],
+"correctAnswer": "B. 空手道"
+},
+{
+"question": "單詞 'Frisbee' 的中文意思是？",
+"options": ["A. 羽毛球", "B. 飛盤", "C. 毽子", "D. 沙包"],
+"correctAnswer": "B. 飛盤"
+},
+{
+"question": "單詞 'ukulele' 的中文意思是？",
+"options": ["A. 吉他", "B. 尤克里里", "C. 小提琴", "D. 鋼琴"],
+"correctAnswer": "B. 尤克里里"
+},
+{
+"question": "單詞 'roller skating' 的中文意思是？",
+"options": ["A. 滑雪", "B. 滑冰", "C. 滑輪溜冰", "D. 滑板"],
+"correctAnswer": "C. 滑輪溜冰"
+},
+{
+"question": "單詞 'skateboarding' 的中文意思是？",
+"options": ["A. 滑輪溜冰", "B. 滑板", "C. 滑雪板", "D. 沖浪板"],
+"correctAnswer": "B. 滑板"
+},
+{
+"question": "單詞 'detective' 的中文意思是？",
+"options": ["A. 律師", "B. 偵探", "C. 警察", "D. 記者"],
+"correctAnswer": "B. 偵探"
+},
+{
+"question": "單詞 'horror' 的中文意思是？",
+"options": ["A. 喜劇", "B. 悲劇", "C. 恐怖", "D. 愛情"],
+"correctAnswer": "C. 恐怖"
+},
+{
+"question": "單詞 'adventure' 的中文意思是？",
+"options": ["A. 冒險", "B. 夢想", "C. 回憶", "D. 幻想"],
+"correctAnswer": "A. 冒險"
+},
+{
+"question": "單詞 'fairy tale' 的中文意思是？",
+"options": ["A. 童話", "B. 寓言", "C. 神話", "D. 傳說"],
+"correctAnswer": "A. 童話"
+},
+{
+"question": "單詞 'touching' 的中文意思是？",
+"options": ["A. 有趣的", "B. 感人的", "C. 驚喜的", "D. 緊張的"],
+"correctAnswer": "B. 感人的"
+},
+{
+"question": "單詞 'scary' 的中文意思是？",
+"options": ["A. 討厭的", "B. 無聊的", "C. 可怕的", "D. 奇怪的"],
+"correctAnswer": "C. 可怕的"
+},
+{
+"question": "單詞 'outgoing' 的中文意思是？",
+"options": ["A. 內向的", "B. 外向的", "C. 固執的", "D. 謙虛的"],
+"correctAnswer": "B. 外向的"
+},
+{
+"question": "單詞 'surprising' 的中文意思是？",
+"options": ["A. 尷尬的", "B. 驚人的", "C. 失望的", "D. 滿意的"],
+"correctAnswer": "B. 驚人的"
+},
+{
+"question": "單詞 'comfortable' 的中文意思是？",
+"options": ["A. 方便的", "B. 舒適的", "C. 簡潔的", "D. 美觀的"],
+"correctAnswer": "B. 舒適的"
+},
+{
+"question": "單詞 'delicious' 的中文意思是？",
+"options": ["A. 新鮮的", "B. 健康的", "C. 美味的", "D. 營養的"],
+"correctAnswer": "C. 美味的"
+},
+{
+"question": "單詞 'neat' 的中文意思是？",
+"options": ["A. 凌亂的", "B. 整潔的", "C. 骯髒的", "D. 簡單的"],
+"correctAnswer": "B. 整潔的"
+},
+{
+"question": "單詞 'naughty' 的中文意思是？",
+"options": ["A. 聽話的", "B. 調皮的", "C. 聰明的", "D. 膽小的"],
+"correctAnswer": "B. 調皮的"
+},
+{
+"question": "單詞 'humble' 的中文意思是？",
+"options": ["A. 驕傲的", "B. 謙虛的", "C. 自私的", "D. 慷慨的"],
+"correctAnswer": "B. 謙虛的"
+},
+{
+"question": "單詞 'sporty' 的中文意思是？",
+"options": ["A. 文靜的", "B. 活潑的", "C. 愛運動的", "D. 愛學習的"],
+"correctAnswer": "C. 愛運動的"
+},
+{
+"question": "單詞 'shy' 的中文意思是？",
+"options": ["A. 膽小的", "B. 勇敢的", "C. 開朗的", "D. 內向的"],
+"correctAnswer": "D. 內向的"
+},
+{
+"question": "單詞 'calm' 的中文意思是？",
+"options": ["A. 激動的", "B. 冷靜的", "C. 緊張的", "D. 慌亂的"],
+"correctAnswer": "B. 冷靜的"
+},
+{
+"question": "單詞 'strong' 的中文意思是？",
+"options": ["A. 虛弱的", "B. 強壯的", "C. 高大的", "D. 肥胖的"],
+"correctAnswer": "B. 強壯的"
+},
+{
+"question": "單詞 'weak' 的中文意思是？",
+"options": ["A. 強大的", "B. 虛弱的", "C. 敏捷的", "D. 遲鈍的"],
+"correctAnswer": "B. 虛弱的"
+},
+{
+"question": "單詞 'dirty' 的中文意思是？",
+"options": ["A. 乾淨的", "B. 骯髒的", "C. 潮濕的", "D. 乾燥的"],
+"correctAnswer": "B. 骯髒的"
+},
+{
+"question": "單詞 'balanced' 的中文意思是？",
+"options": ["A. 均衡的", "B. 單一的", "C. 豐富的", "D. 簡單的"],
+"correctAnswer": "A. 均衡的"
+},
+{
+"question": "單詞 'pyramid' 的中文意思是？",
+"options": ["A. 圓柱體", "B. 金字塔", "C. 長方體", "D. 圓錐體"],
+"correctAnswer": "B. 金字塔"
+},
+{
+"question": "單詞 'junk' 的中文意思是？",
+"options": ["A. 營養的", "B. 垃圾的", "C. 新鮮的", "D. 健康的"],
+"correctAnswer": "B. 垃圾的"
+},
+{
+"question": "單詞 'seafood' 的中文意思是？",
+"options": ["A. 肉類", "B. 蔬菜", "C. 海鮮", "D. 水果"],
+"correctAnswer": "C. 海鮮"
+},
+{
+"question": "單詞 'cereals' 的中文意思是？",
+"options": ["A. 穀物", "B. 麵包", "C. 蛋糕", "D. 餅乾"],
+"correctAnswer": "A. 穀物"
+},
+{
+"question": "單詞 'dairy' 的中文意思是？",
+"options": ["A. 乳製品", "B. 肉製品", "C. 豆製品", "D. 水產品"],
+"correctAnswer": "A. 乳製品"
+},
+{
+"question": "單詞 'enough' 的中文意思是？",
+"options": ["A. 過多的", "B. 足夠的", "C. 缺少的", "D. 剩餘的"],
+"correctAnswer": "B. 足夠的"
+},
+{
+"question": "單詞 'exhibit' 的中文意思是？",
+"options": ["A. 展覽", "B. 表演", "C. 比賽", "D. 聚會"],
+"correctAnswer": "A. 展覽"
+},
+{
+"question": "單詞 'souvenir' 的中文意思是？",
+"options": ["A. 禮物", "B. 紀念品", "C. 獎品", "D. 玩具"],
+"correctAnswer": "B. 紀念品"
+},
+{
+"question": "單詞 'escalator' 的中文意思是？",
+"options": ["A. 電梯", "B. 樓梯", "C. 自動扶梯", "D. 電動門"],
+"correctAnswer": "C. 自動扶梯"
+},
+{
+"question": "單詞 'exhibition' 的中文意思是？",
+"options": ["A. 展覽會", "B. 演唱會", "C. 電影節", "D. 運動會"],
+"correctAnswer": "A. 展覽會"
+},
+{
+"question": "單詞 'bumper cars' 的中文意思是？",
+"options": ["A. 賽車", "B. 碰碰車", "C. 小火車", "D. 旋轉木馬"],
+"correctAnswer": "B. 碰碰車"
+},
+{
+"question": "單詞 'Ferris wheel' 的中文意思是？",
+"options": ["A. 摩天輪", "B. 過山車", "C. 鞦韆", "D. 跳床"],
+"correctAnswer": "A. 摩天輪"
+},
+{
+"question": "單詞 'merry-go-round' 的中文意思是？",
+"options": ["A. 旋轉木馬", "B. 碰碰車", "C. 過山車", "D. 摩天輪"],
+"correctAnswer": "A. 旋轉木馬"
+},
+{
+"question": "單詞 'roller coaster' 的中文意思是？",
+"options": ["A. 旋轉木馬", "B. 摩天輪", "C. 過山車", "D. 小火車"],
+"correctAnswer": "C. 過山車"
+},
+{
+"question": "單詞 'jumping castle' 的中文意思是？",
+"options": ["A. 城堡模型", "B. 充氣城堡", "C. 城堡滑梯", "D. 城堡迷宮"],
+"correctAnswer": "B. 充氣城堡"
+},
+{
+"question": "單詞 'cave' 的中文意思是？",
+"options": ["A. 山洞", "B. 山谷", "C. 山峰", "D. 峽谷"],
+"correctAnswer": "A. 山洞"
+},
+{
+"question": "單詞 'desert' 的中文意思是？",
+"options": ["A. 海洋", "B. 沙漠", "C. 森林", "D. 草原"],
+"correctAnswer": "B. 沙漠"
+},
+{
+"question": "單詞 'waterfall' 的中文意思是？",
+"options": ["A. 河流", "B. 湖泊", "C. 瀑布", "D. 山泉"],
+"correctAnswer": "C. 瀑布"
+},
+{
+"question": "單詞 'camel' 的中文意思是？",
+"options": ["A. 駱駝", "B. 馬", "C. 驢", "D. 騾子"],
+"correctAnswer": "A. 駱駝"
+},
+{
+"question": "單詞 'hippo' 的中文意思是？",
+"options": ["A. 河馬", "B. 犀牛", "C. 大象", "D. 長頸鹿"],
+"correctAnswer": "A. 河馬"
+},
+{
+"question": "單詞 'zebra' 的中文意思是？",
+"options": ["A. 馬", "B. 斑馬", "C. 驢", "D. 鹿"],
+"correctAnswer": "B. 斑馬"
+},
+{
+"question": "單詞 'marshmallows' 的中文意思是？",
+"options": ["A. 巧克力", "B. 棉花糖", "C. 糖果", "D. 果凍"],
+"correctAnswer": "B. 棉花糖"
+},
+{
+"question": "單詞 'riddle' 的中文意思是？",
+"options": ["A. 故事", "B. 謎語", "C. 笑話", "D. 寓言"],
+"correctAnswer": "B. 謎語"
+},
+{
+"question": "單詞 'carefully' 的中文意思是？",
+"options": ["A. 仔細地", "B. 快速地", "C. 隨意地", "D. 輕易地"],
+"correctAnswer": "A. 仔細地"
+}
+
+  ],
+
+
+  // 類別5：小五單詞 (78題)
+
+category5: [
+    
+{
+"question": "單詞 'pedestrian' 的中文意思是？",
+"options": ["A. 司機", "B. 行人", "C. 騎士", "D. 乘客"],
+"correctAnswer": "B. 行人"
+},
+{
+"question": "單詞 'footbridge' 的中文意思是？",
+"options": ["A. 隧道", "B. 天橋", "C. 地下通道", "D. 斑馬線"],
+"correctAnswer": "B. 天橋"
+},
+{
+"question": "單詞 'subway' 的中文意思是？",
+"options": ["A. 地鐵", "B. 天橋", "C. 地下通道", "D. 過街天橋"],
+"correctAnswer": "C. 地下通道"
+},
+{
+"question": "單詞 'terminal' 的中文意思是？",
+"options": ["A. 終點站", "B. 起點站", "C. 中途站", "D. 轉乘站"],
+"correctAnswer": "A. 終點站"
+},
+{
+"question": "單詞 'tunnel' 的中文意思是？",
+"options": ["A. 橋梁", "B. 隧道", "C. 堤壩", "D. 渠道"],
+"correctAnswer": "B. 隧道"
+},
+{
+"question": "單詞 'pavement' 的中文意思是？",
+"options": ["A. 馬路", "B. 人行道", "C. 斑馬線", "D. 停車場"],
+"correctAnswer": "B. 人行道"
+},
+{
+"question": "單詞 'crossing' 的中文意思是？",
+"options": ["A. 轉彎", "B. 過馬路", "C. 停車", "D. 超車"],
+"correctAnswer": "B. 過馬路"
+},
+{
+"question": "單詞 'rank' 的中文意思是？",
+"options": ["A. 等級", "B. 排隊", "C. 出租車候車處", "D. 順序"],
+"correctAnswer": "C. 出租車候車處"
+},
+{
+"question": "單詞 'vacuum' 的中文意思是？",
+"options": ["A. 吸塵", "B. 打掃", "C. 拖地", "D. 擦窗"],
+"correctAnswer": "A. 吸塵"
+},
+{
+"question": "單詞 'iron' 的中文意思是？",
+"options": ["A. 鐵", "B. 熨燙", "C. 鋼", "D. 金屬"],
+"correctAnswer": "B. 熨燙"
+},
+{
+"question": "單詞 'grocery' 的中文意思是？",
+"options": ["A. 雜貨", "B. 百貨", "C. 超市", "D. 市場"],
+"correctAnswer": "A. 雜貨"
+},
+{
+"question": "單詞 'takeaway' 的中文意思是？",
+"options": ["A. 外賣", "B. 自帶", "C. 打包", "D. 外帶"],
+"correctAnswer": "A. 外賣"
+},
+{
+"question": "單詞 'hang' 的中文意思是？",
+"options": ["A. 掛", "B. 放", "C. 擺", "D. 擱"],
+"correctAnswer": "A. 掛"
+},
+{
+"question": "單詞 'tidy' 的中文意思是？",
+"options": ["A. 打掃", "B. 整理", "C. 清潔", "D. 收拾"],
+"correctAnswer": "B. 整理"
+},
+{
+"question": "單詞 'rubbish' 的中文意思是？",
+"options": ["A. 垃圾", "B. 廢物", "C. 廢料", "D. 殘渣"],
+"correctAnswer": "A. 垃圾"
+},
+{
+"question": "單詞 'upload' 的中文意思是？",
+"options": ["A. 下載", "B. 上傳", "C. 複製", "D. 粘貼"],
+"correctAnswer": "B. 上傳"
+},
+{
+"question": "單詞 'download' 的中文意思是？",
+"options": ["A. 上傳", "B. 下載", "C. 發送", "D. 接收"],
+"correctAnswer": "B. 下載"
+},
+{
+"question": "單詞 'publish' 的中文意思是？",
+"options": ["A. 發布", "B. 列印", "C. 復印", "D. 保存"],
+"correctAnswer": "A. 發布"
+},
+{
+"question": "單詞 'comment' 的中文意思是？",
+"options": ["A. 評論", "B. 點贊", "C. 分享", "D. 轉發"],
+"correctAnswer": "A. 評論"
+},
+{
+"question": "單詞 'rating' 的中文意思是？",
+"options": ["A. 等級", "B. 評分", "C. 排名", "D. 分數"],
+"correctAnswer": "B. 評分"
+},
+{
+"question": "單詞 'forum' 的中文意思是？",
+"options": ["A. 論壇", "B. 博客", "C. 網站", "D. 社群"],
+"correctAnswer": "A. 論壇"
+},
+{
+"question": "單詞 'password' 的中文意思是？",
+"options": ["A. 用戶名", "B. 密碼", "C. 賬號", "D. 驗證碼"],
+"correctAnswer": "B. 密碼"
+},
+{
+"question": "單詞 'selfie' 的中文意思是？",
+"options": ["A. 合照", "B. 自拍", "C. 錄影", "D. 直播"],
+"correctAnswer": "B. 自拍"
+},
+{
+"question": "單詞 'borrow' 的中文意思是？",
+"options": ["A. 借給", "B. 借來", "C. 租用", "D. 租借"],
+"correctAnswer": "B. 借來"
+},
+{
+"question": "單詞 'lend' 的中文意思是？",
+"options": ["A. 借來", "B. 借給", "C. 歸還", "D. 償還"],
+"correctAnswer": "B. 借給"
+},
+{
+"question": "單詞 'recipe' 的中文意思是？",
+"options": ["A. 菜譜", "B. 菜名", "C. 食材", "D. 烹飪"],
+"correctAnswer": "A. 菜譜"
+},
+{
+"question": "單詞 'flour' 的中文意思是？",
+"options": ["A. 麵包", "B. 麵粉", "C. 麵條", "D. 麵包糠"],
+"correctAnswer": "B. 麵粉"
+},
+{
+"question": "單詞 'ride' 的中文意思是？",
+"options": ["A. 騎", "B. 坐", "C. 駕駛", "D. 乘車"],
+"correctAnswer": "A. 騎"
+},
+{
+"question": "單詞 'feed' 的中文意思是？",
+"options": ["A. 餵養", "B. 飼料", "C. 餵食", "D. 供養"],
+"correctAnswer": "A. 餵養"
+},
+{
+"question": "單詞 'plant' 的中文意思是？",
+"options": ["A. 植物", "B. 種植", "C. 工廠", "D. 農場"],
+"correctAnswer": "B. 種植"
+},
+{
+"question": "單詞 'pick' 的中文意思是？",
+"options": ["A. 摘", "B. 拿", "C. 選", "D. 捡"],
+"correctAnswer": "A. 摘"
+},
+{
+"question": "單詞 'row' 的中文意思是？",
+"options": ["A. 排", "B. 劃船", "C. 行", "D. 列"],
+"correctAnswer": "B. 劃船"
+},
+{
+"question": "單詞 'golf' 的中文意思是？",
+"options": ["A. 高爾夫", "B. 網球", "C. 羽毛球", "D. 棒球"],
+"correctAnswer": "A. 高爾夫"
+},
+{
+"question": "單詞 'candle' 的中文意思是？",
+"options": ["A. 蠟燭", "B. 燈泡", "C. 電燈", "D. 火把"],
+"correctAnswer": "A. 蠟燭"
+},
+{
+"question": "單詞 'soap' 的中文意思是？",
+"options": ["A. 肥皂", "B. 香皂", "C. 洗潔精", "D. 洗衣液"],
+"correctAnswer": "A. 肥皂"
+},
+{
+"question": "單詞 'jam' 的中文意思是？",
+"options": ["A. 果醬", "B. 果凍", "C. 果醬", "D. 果醬"],
+"correctAnswer": "A. 果醬"
+},
+{
+"question": "單詞 'gentle' 的中文意思是？",
+"options": ["A. 溫和的", "B. 粗魯的", "C. 活潑的", "D. 沉靜的"],
+"correctAnswer": "A. 溫和的"
+},
+{
+"question": "單詞 'humble' 的中文意思是？",
+"options": ["A. 謙虛的", "B. 驕傲的", "C. 自私的", "D. 慷慨的"],
+"correctAnswer": "A. 謙虛的"
+},
+{
+"question": "單詞 'generous' 的中文意思是？",
+"options": ["A. 吝嗇的", "B. 慷慨的", "C. 自私的", "D. 小氣的"],
+"correctAnswer": "B. 慷慨的"
+},
+{
+"question": "單詞 'creative' 的中文意思是？",
+"options": ["A. 創造性的", "B. 保守的", "C. 傳統的", "D. 固執的"],
+"correctAnswer": "A. 創造性的"
+},
+{
+"question": "單詞 'responsible' 的中文意思是？",
+"options": ["A. 負責的", "B. 無責任的", "C. 粗心的", "D. 馬虎的"],
+"correctAnswer": "A. 負責的"
+},
+{
+"question": "單詞 'cheerful' 的中文意思是？",
+"options": ["A. 悲傷的", "B. 快樂的", "C. 憤怒的", "D. 緊張的"],
+"correctAnswer": "B. 快樂的"
+},
+{
+"question": "單詞 'caring' 的中文意思是？",
+"options": ["A. 冷漠的", "B. 關心的", "C. 自私的", "D. 無情的"],
+"correctAnswer": "B. 關心的"
+},
+{
+"question": "單詞 'patient' 的中文意思是？",
+"options": ["A. 急躁的", "B. 耐心的", "C. 匆忙的", "D. 緊張的"],
+"correctAnswer": "B. 耐心的"
+},
+{
+"question": "單詞 'helpful' 的中文意思是？",
+"options": ["A. 無助的", "B. 有幫助的", "C. 無用的", "D. 無益的"],
+"correctAnswer": "B. 有幫助的"
+},
+{
+"question": "單詞 'experienced' 的中文意思是？",
+"options": ["A. 有經驗的", "B. 無經驗的", "C. 新手的", "D. 初學的"],
+"correctAnswer": "A. 有經驗的"
+},
+{
+"question": "單詞 'inspire' 的中文意思是？",
+"options": ["A. 鼓舞", "B. 打擊", "C. 挫敗", "D. 阻止"],
+"correctAnswer": "A. 鼓舞"
+},
+{
+"question": "單詞 'improve' 的中文意思是？",
+"options": ["A. 惡化", "B. 改善", "C. 保持", "D. 降低"],
+"correctAnswer": "B. 改善"
+},
+{
+"question": "單詞 'competition' 的中文意思是？",
+"options": ["A. 合作", "B. 比賽", "C. 會議", "D. 聚會"],
+"correctAnswer": "B. 比賽"
+},
+{
+"question": "單詞 'event' 的中文意思是？",
+"options": ["A. 事件", "B. 活動", "C. 比賽", "D. 儀式"],
+"correctAnswer": "B. 活動"
+},
+{
+"question": "單詞 'medal' 的中文意思是？",
+"options": ["A. 獎杯", "B. 獎牌", "C. 獎狀", "D. 獎品"],
+"correctAnswer": "B. 獎牌"
+},
+{
+"question": "單詞 'ankle' 的中文意思是？",
+"options": ["A. 膝蓋", "B. 腳踝", "C. 手肘", "D. 手腕"],
+"correctAnswer": "B. 腳踝"
+},
+{
+"question": "單詞 'elbow' 的中文意思是？",
+"options": ["A. 肩膀", "B. 手腕", "C. 手肘", "D. 腳踝"],
+"correctAnswer": "C. 手肘"
+},
+{
+"question": "單詞 'scrape' 的中文意思是？",
+"options": ["A. 割傷", "B. 擦傷", "C. 撞傷", "D. 燙傷"],
+"correctAnswer": "B. 擦傷"
+},
+{
+"question": "單詞 'twist' 的中文意思是？",
+"options": ["A. 折斷", "B. 扭曲", "C. 撕裂", "D. 擠壓"],
+"correctAnswer": "B. 扭曲"
+},
+{
+"question": "單詞 'bang' 的中文意思是？",
+"options": ["A. 輕觸", "B. 撞擊", "C. 撫摸", "D. 推動"],
+"correctAnswer": "B. 撞擊"
+},
+{
+"question": "單詞 'fever' 的中文意思是？",
+"options": ["A. 咳嗽", "B. 發燒", "C. 感冒", "D. 流感"],
+"correctAnswer": "B. 發燒"
+},
+{
+"question": "單詞 'flu' 的中文意思是？",
+"options": ["A. 感冒", "B. 流感", "C. 發燒", "D. 咳嗽"],
+"correctAnswer": "B. 流感"
+},
+{
+"question": "單詞 'muscle' 的中文意思是？",
+"options": ["A. 骨骼", "B. 肌肉", "C. 關節", "D. 神經"],
+"correctAnswer": "B. 肌肉"
+},
+{
+"question": "單詞 'performance' 的中文意思是？",
+"options": ["A. 練習", "B. 表演", "C. 訓練", "D. 比賽"],
+"correctAnswer": "B. 表演"
+},
+{
+"question": "單詞 'stage' 的中文意思是？",
+"options": ["A. 舞臺", "B. 劇院", "C. 後臺", "D. 觀眾席"],
+"correctAnswer": "A. 舞臺"
+},
+{
+"question": "單詞 'charity' 的中文意思是？",
+"options": ["A. 商業", "B. 慈善", "C. 投資", "D. 儲蓄"],
+"correctAnswer": "B. 慈善"
+},
+{
+"question": "單詞 'award' 的中文意思是？",
+"options": ["A. 獎項", "B. 懲罰", "C. 禮物", "D. 獎金"],
+"correctAnswer": "A. 獎項"
+},
+{
+"question": "單詞 'musician' 的中文意思是？",
+"options": ["A. 畫家", "B. 音樂家", "C. 作家", "D. 演員"],
+"correctAnswer": "B. 音樂家"
+},
+{
+"question": "單詞 'scientist' 的中文意思是？",
+"options": ["A. 工程師", "B. 科學家", "C. 醫生", "D. 教師"],
+"correctAnswer": "B. 科學家"
+},
+{
+"question": "單詞 'businessman' 的中文意思是？",
+"options": ["A. 老闆", "B. 商人", "C. 員工", "D. 經理"],
+"correctAnswer": "B. 商人"
+},
+{
+"question": "單詞 'competition' 的中文意思是？",
+"options": ["A. 合作", "B. 比賽", "C. 會議", "D. 聚會"],
+"correctAnswer": "B. 比賽"
+},
+{
+"question": "單詞 'scholarship' 的中文意思是？",
+"options": ["A. 學費", "B. 獎學金", "C. 書籍", "D. 文具"],
+"correctAnswer": "B. 獎學金"
+},
+{
+"question": "單詞 'pedagogy' 的中文意思是？",
+"options": ["A. 教學法", "B. 教育學", "C. 心理學", "D. 哲學"],
+"correctAnswer": "A. 教學法"
+},
+{
+"question": "單詞 'literacy' 的中文意思是？",
+"options": ["A. 識字能力", "B. 閱讀能力", "C. 寫作能力", "D. 表達能力"],
+"correctAnswer": "A. 識字能力"
+},
+{
+"question": "單詞 'curriculum' 的中文意思是？",
+"options": ["A. 課程", "B. 教材", "C. 教學", "D. 考試"],
+"correctAnswer": "A. 課程"
+},
+{
+"question": "單詞 'thesis' 的中文意思是？",
+"options": ["A. 論文", "B. 報告", "C. 文章", "D. 書籍"],
+"correctAnswer": "A. 論文"
+},
+{
+"question": "單詞 'discipline' 的中文意思是？",
+"options": ["A. 紀律", "B. 學科", "C. 規則", "D. 懲罰"],
+"correctAnswer": "B. 學科"
+},
+{
+"question": "單詞 'tuition' 的中文意思是？",
+"options": ["A. 學費", "B. 輔導", "C. 課程", "D. 教材"],
+"correctAnswer": "A. 學費"
+},
+{
+"question": "單詞 'faculty' 的中文意思是？",
+"options": ["A. 教職員", "B. 學生", "C. 管理層", "D. 校友"],
+"correctAnswer": "A. 教職員"
+},
+{
+"question": "單詞 'syllabus' 的中文意思是？",
+"options": ["A. 教學大綱", "B. 課程表", "C. 教材", "D. 考試大綱"],
+"correctAnswer": "A. 教學大綱"
+},
+{
+"question": "單詞 'commerce' 的中文意思是？",
+"options": ["A. 商業", "B. 工業", "C. 農業", "D. 服務業"],
+"correctAnswer": "A. 商業"
+},
+{
+"question": "單詞 'enterprise' 的中文意思是？",
+"options": ["A. 企業", "B. 事業", "C. 計劃", "D. 項目"],
+"correctAnswer": "A. 企業"
+},
+{
+"question": "單詞 'revenue' 的中文意思是？",
+"options": ["A. 收入", "B. 利潤", "C. 成本", "D. 支出"],
+"correctAnswer": "A. 收入"
+},
+{
+"question": "單詞 'merger' 的中文意思是？",
+"options": ["A. 合併", "B. 收購", "C. 分拆", "D. 重組"],
+"correctAnswer": "A. 合併"
+},
+{
+"question": "單詞 'subsidiary' 的中文意思是？",
+"options": ["A. 總公司", "B. 子公司", "C. 合作公司", "D. 競爭公司"],
+"correctAnswer": "B. 子公司"
+},
+{
+"question": "單詞 'franchise' 的中文意思是？",
+"options": ["A. 特許經營", "B. 直營", "C. 代理", "D. 經銷"],
+"correctAnswer": "A. 特許經營"
+},
+{
+"question": "單詞 'logistics' 的中文意思是？",
+"options": ["A. 物流", "B. 生產", "C. 銷售", "D. 市場"],
+"correctAnswer": "A. 物流"
+},
+{
+"question": "單詞 'acquisition' 的中文意思是？",
+"options": ["A. 收購", "B. 出售", "C. 租賃", "D. 授權"],
+"correctAnswer": "A. 收購"
+},
+{
+"question": "單詞 'fiscal' 的中文意思是？",
+"options": ["A. 財政的", "B. 金融的", "C. 經濟的", "D. 商業的"],
+"correctAnswer": "A. 財政的"
+},
+{
+"question": "單詞 'venture' 的中文意思是？",
+"options": ["A. 冒險", "B. 投資", "C. 風險投資", "D. 創業"],
+"correctAnswer": "C. 風險投資"
+},
+{
+"question": "單詞 'paradigm' 的中文意思是？",
+"options": ["A. 範式", "B. 模式", "C. 模型", "D. 框架"],
+"correctAnswer": "A. 範式"
+},
+{
+"question": "單詞 'epistemology' 的中文意思是？",
+"options": ["A. 認識論", "B. 方法論", "C. 本體論", "D. 價值論"],
+"correctAnswer": "A. 認識論"
+},
+{
+"question": "單詞 'hermeneutics' 的中文意思是？",
+"options": ["A. 詮釋學", "B. 解釋學", "C. 理解學", "D. 分析學"],
+"correctAnswer": "A. 詮釋學"
+},
+{
+"question": "單詞 'phenomenology' 的中文意思是？",
+"options": ["A. 現象學", "B. 本體論", "C. 認識論", "D. 方法論"],
+"correctAnswer": "A. 現象學"
+},
+{
+"question": "單詞 'ideology' 的中文意思是？",
+"options": ["A. 思想", "B. 理論", "C. 意識形態", "D. 學說"],
+"correctAnswer": "C. 意識形態"
+},
+{
+"question": "單詞 'anthropology' 的中文意思是？",
+"options": ["A. 人類學", "B. 考古學", "C. 歷史學", "D. 地理學"],
+"correctAnswer": "A. 人類學"
+},
+{
+"question": "單詞 'ethics' 的中文意思是？",
+"options": ["A. 道德", "B. 倫理學", "C. 法律", "D. 規則"],
+"correctAnswer": "B. 倫理學"
+},
+{
+"question": "單詞 'aesthetics' 的中文意思是？",
+"options": ["A. 美學", "B. 藝術", "C. 文學", "D. 音樂"],
+"correctAnswer": "A. 美學"
+},
+{
+"question": "單詞 'sociology' 的中文意思是？",
+"options": ["A. 社會學", "B. 心理學", "C. 人類學", "D. 經濟學"],
+"correctAnswer": "A. 社會學"
+},
+{
+"question": "單詞 'philosophy' 的中文意思是？",
+"options": ["A. 哲學", "B. 科學", "C. 藝術", "D. 文學"],
+"correctAnswer": "A. 哲學"
+},
+{
+"question": "單詞 'marshmallows' 的中文意思是？",
+"options": ["A. 巧克力", "B. 棉花糖", "C. 糖果", "D. 果凍"],
+"correctAnswer": "B. 棉花糖"
+},
+{
+"question": "單詞 'souvenir' 的中文意思是？",
+"options": ["A. 禮物", "B. 紀念品", "C. 獎品", "D. 玩具"],
+"correctAnswer": "B. 紀念品"
+},
+{
+"question": "單詞 'escalator' 的中文意思是？",
+"options": ["A. 電梯", "B. 樓梯", "C. 自動扶梯", "D. 電動門"],
+"correctAnswer": "C. 自動扶梯"
+},
+{
+"question": "單詞 'exhibition' 的中文意思是？",
+"options": ["A. 展覽會", "B. 演唱會", "C. 電影節", "D. 運動會"],
+"correctAnswer": "A. 展覽會"
+},
+{
+"question": "單詞 'exit' 的中文意思是？",
+"options": ["A. 入口", "B. 出口", "C. 走廊", "D. 大廳"],
+"correctAnswer": "B. 出口"
+},
+{
+"question": "單詞 'counter' 的中文意思是？",
+"options": ["A. 桌子", "B. 椅子", "C. 櫃台", "D. 貨架"],
+"correctAnswer": "C. 櫃台"
+},
+{
+"question": "單詞 'display' 的中文意思是？",
+"options": ["A. 隱藏", "B. 展示", "C. 儲存", "D. 銷售"],
+"correctAnswer": "B. 展示"
+},
+{
+"question": "單詞 'bump' 的中文意思是？",
+"options": ["A. 撞擊", "B. 輕觸", "C. 撫摸", "D. 推動"],
+"correctAnswer": "A. 撞擊"
+},
+{
+"question": "單詞 'crash' 的中文意思是？",
+"options": ["A. 碰撞", "B. 墜落", "C. 爆炸", "D. 燃燒"],
+"correctAnswer": "A. 碰撞"
+},
+{
+"question": "單詞 'slip' 的中文意思是？",
+"options": ["A. 滑倒", "B. 跌倒", "C. 摔跤", "D. 滑落"],
+"correctAnswer": "A. 滑倒"
+},
+{
+"question": "單詞 'rescue' 的中文意思是？",
+"options": ["A. 拯救", "B. 幫助", "C. 支援", "D. 救援"],
+"correctAnswer": "D. 救援"
+},
+{
+"question": "單詞 'roll' 的中文意思是？",
+"options": ["A. 滾動", "B. 旋轉", "C. 翻轉", "D. 移動"],
+"correctAnswer": "A. 滾動"
+},
+{
+"question": "單詞 'spill' 的中文意思是？",
+"options": ["A. 灑出", "B. 溢出", "C. 滴落", "D. 噴灑"],
+"correctAnswer": "A. 灑出"
+},
+{
+"question": "單詞 'detective' 的中文意思是？",
+"options": ["A. 警察", "B. 偵探", "C. 律師", "D. 記者"],
+"correctAnswer": "B. 偵探"
+},
+{
+"question": "單詞 'burglar' 的中文意思是？",
+"options": ["A. 小偷", "B. 強盜", "C. 搶劫犯", "D. 夜盜"],
+"correctAnswer": "D. 夜盜"
+},
+{
+"question": "單詞 'arrest' 的中文意思是？",
+"options": ["A. 逮捕", "B. 拘留", "C. 審判", "D. 懲罰"],
+"correctAnswer": "A. 逮捕"
+},
+{
+"question": "單詞 'witness' 的中文意思是？",
+"options": ["A. 證人", "B. 受害者", "C. 嫌疑人", "D. 警官"],
+"correctAnswer": "A. 證人"
+},
+{
+"question": "單詞 'riddle' 的中文意思是？",
+"options": ["A. 故事", "B. 謎語", "C. 笑話", "D. 寓言"],
+"correctAnswer": "B. 謎語"
+},
+{
+"question": "單詞 'indirect' 的中文意思是？",
+"options": ["A. 直接的", "B. 間接的", "C. 直接地", "D. 間接地"],
+"correctAnswer": "B. 間接的"
+},
+{
+"question": "單詞 'infinitive' 的中文意思是？",
+"options": ["A. 不定式", "B. 動名詞", "C. 分詞", "D. 形容詞"],
+"correctAnswer": "A. 不定式"
+},
+{
+"question": "單詞 'indefinite' 的中文意思是？",
+"options": ["A. 確定的", "B. 不確定的", "C. 有限的", "D. 無限的"],
+"correctAnswer": "B. 不確定的"
+}
+  ],
+
+// 類別6：小六單詞 (54題)
+  category6: [
+    
+{
+"question": "單詞 'architect' 的中文意思是？",
+"options": ["A. 醫生", "B. 護士", "C. 建築師", "D. 教師"],
+"correctAnswer": "C. 建築師"
+},
+{
+"question": "單詞 'astronaut' 的中文意思是？",
+"options": ["A. 司機", "B. 農民", "C. 飛行員", "D. 宇航員"],
+"correctAnswer": "D. 宇航員"
+},
+{
+"question": "單詞 'lawyer' 的中文意思是？",
+"options": ["A. 廚師", "B. 消防員", "C. 律師", "D. 警察"],
+"correctAnswer": "C. 律師"
+},
+{
+"question": "單詞 'firefighter' 的中文意思是？",
+"options": ["A. 醫生", "B. 工程師", "C. 畫家", "D. 消防員"],
+"correctAnswer": "D. 消防員"
+},
+{
+"question": "單詞 'pilot' 的中文意思是？",
+"options": ["A. 船員", "B. 教練", "C. 飛行員", "D. 導遊"],
+"correctAnswer": "C. 飛行員"
+},
+{
+"question": "單詞 'model' 的中文意思是？",
+"options": ["A. 演員", "B. 歌手", "C. 舞者", "D. 模特兒"],
+"correctAnswer": "D. 模特兒"
+},
+{
+"question": "單詞 'reporter' 的中文意思是？",
+"options": ["A. 編輯", "B. 作家", "C. 記者", "D. 翻譯"],
+"correctAnswer": "C. 記者"
+},
+{
+"question": "單詞 'vet' 的中文意思是？",
+"options": ["A. 醫生", "B. 牙醫", "C. 獸醫", "D. 護士"],
+"correctAnswer": "C. 獸醫"
+},
+{
+"question": "單詞 'social worker' 的中文意思是？",
+"options": ["A. 志願者", "B. 慈善家", "C. 社工", "D. 教育家"],
+"correctAnswer": "C. 社工"
+},
+{
+"question": "單詞 'computer programmer' 的中文意思是？",
+"options": ["A. 設計師", "B. 工程師", "C. 技術員", "D. 程式設計師"],
+"correctAnswer": "D. 程式設計師"
+},
+{
+"question": "單詞 'fashion designer' 的中文意思是？",
+"options": ["A. 裁縫", "B. 藝術家", "C. 時裝設計師", "D. 工匠"],
+"correctAnswer": "C. 時裝設計師"
+},
+{
+"question": "單詞 'flight attendant' 的中文意思是？",
+"options": ["A. 導遊", "B. 乘務長", "C. 售票員", "D. 空中乘務員"],
+"correctAnswer": "D. 空中乘務員"
+},
+{
+"question": "單詞 'businessman' 的中文意思是？",
+"options": ["A. 工人", "B. 職員", "C. 商人", "D. 經理"],
+"correctAnswer": "C. 商人"
+},
+{
+"question": "單詞 'businesswoman' 的中文意思是？",
+"options": ["A. 女教師", "B. 女醫生", "C. 女律師", "D. 女商人"],
+"correctAnswer": "D. 女商人"
+},
+{
+"question": "單詞 'dentist' 的中文意思是？",
+"options": ["A. 醫生", "B. 眼科醫生", "C. 牙醫", "D. 外科醫生"],
+"correctAnswer": "C. 牙醫"
+},
+{
+"question": "單詞 'drought' 的中文意思是？",
+"options": ["A. 洪水", "B. 颱風", "C. 乾旱", "D. 地震"],
+"correctAnswer": "C. 乾旱"
+},
+{
+"question": "單詞 'earthquake' 的中文意思是？",
+"options": ["A. 暴雨", "B. 山泥傾瀉", "C. 海嘯", "D. 地震"],
+"correctAnswer": "D. 地震"
+},
+{
+"question": "單詞 'typhoon' 的中文意思是？",
+"options": ["A. 暴雨", "B. 洪水", "C. 颱風", "D. 乾旱"],
+"correctAnswer": "C. 颱風"
+},
+{
+"question": "單詞 'rainstorm' 的中文意思是？",
+"options": ["A. 颱風", "B. 地震", "C. 山泥傾瀉", "D. 暴雨"],
+"correctAnswer": "D. 暴雨"
+},
+{
+"question": "單詞 'landslide' 的中文意思是？",
+"options": ["A. 洪水", "B. 乾旱", "C. 山泥傾瀉", "D. 颱風"],
+"correctAnswer": "C. 山泥傾瀉"
+},
+{
+"question": "單詞 'flood' 的中文意思是？",
+"options": ["A. 乾旱", "B. 地震", "C. 暴雨", "D. 洪水"],
+"correctAnswer": "D. 洪水"
+},
+{
+"question": "單詞 'charity' 的中文意思是？",
+"options": ["A. 福利", "B. 捐贈", "C. 慈善", "D. 救助"],
+"correctAnswer": "C. 慈善"
+},
+{
+"question": "單詞 'donate' 的中文意思是？",
+"options": ["A. 接受", "B. 給予", "C. 分享", "D. 捐贈"],
+"correctAnswer": "D. 捐贈"
+},
+{
+"question": "單詞 'volunteer' 的中文意思是？",
+"options": ["A. 義工", "B. 職員", "C. 員工", "D. 志願者"],
+"correctAnswer": "D. 志願者"
+},
+{
+"question": "單詞 'recycle' 的中文意思是？",
+"options": ["A. 丟棄", "B. 浪費", "C. 回收", "D. 保存"],
+"correctAnswer": "C. 回收"
+},
+{
+"question": "單詞 'pollution' 的中文意思是？",
+"options": ["A. 垃圾", "B. 廢物", "C. 污染", "D. 污漬"],
+"correctAnswer": "C. 污染"
+},
+{
+"question": "單詞 'waste' 的中文意思是？",
+"options": ["A. 節約", "B. 利用", "C. 保護", "D. 浪費"],
+"correctAnswer": "D. 浪費"
+},
+{
+"question": "單詞 'plastic' 的中文意思是？",
+"options": ["A. 玻璃", "B. 金屬", "C. 塑膠", "D. 紙張"],
+"correctAnswer": "C. 塑膠"
+},
+{
+"question": "單詞 'disposable' 的中文意思是？",
+"options": ["A. 可重複的", "B. 可回收的", "C. 可降解的", "D. 一次性的"],
+"correctAnswer": "D. 一次性的"
+},
+{
+"question": "單詞 'greenhouse' 的中文意思是？",
+"options": ["A. 花園", "B. 果園", "C. 溫室", "D. 菜園"],
+"correctAnswer": "C. 溫室"
+},
+{
+"question": "單詞 'endangered' 的中文意思是？",
+"options": ["A. 危險的", "B. 稀少的", "C. 瀕危的", "D. 滅絕的"],
+"correctAnswer": "C. 瀕危的"
+},
+{
+"question": "單詞 'extinct' 的中文意思是？",
+"options": ["A. 瀕危的", "B. 稀少的", "C. 危險的", "D. 滅絕的"],
+"correctAnswer": "D. 滅絕的"
+},
+{
+"question": "單詞 'habitat' 的中文意思是？",
+"options": ["A. 環境", "B. 家園", "C. 棲息地", "D. 住所"],
+"correctAnswer": "C. 棲息地"
+},
+{
+"question": "單詞 'coral reef' 的中文意思是？",
+"options": ["A. 礁石", "B. 沙灘", "C. 珊瑚礁", "D. 海底"],
+"correctAnswer": "C. 珊瑚礁"
+},
+{
+"question": "單詞 'desert' 的中文意思是？",
+"options": ["A. 森林", "B. 草原", "C. 山地", "D. 沙漠"],
+"correctAnswer": "D. 沙漠"
+},
+{
+"question": "單詞 'volcano' 的中文意思是？",
+"options": ["A. 山脈", "B. 丘陵", "C. 平原", "D. 火山"],
+"correctAnswer": "D. 火山"
+},
+{
+"question": "單詞 'amusement' 的中文意思是？",
+"options": ["A. 驚訝", "B. 失望", "C. 娛樂", "D. 無聊"],
+"correctAnswer": "C. 娛樂"
+},
+{
+"question": "單詞 'amazement' 的中文意思是？",
+"options": ["A. 娛樂", "B. 失望", "C. 無聊", "D. 驚訝"],
+"correctAnswer": "D. 驚訝"
+},
+{
+"question": "單詞 'disappointment' 的中文意思是？",
+"options": ["A. 驚訝", "B. 娛樂", "C. 失望", "D. 無聊"],
+"correctAnswer": "C. 失望"
+},
+{
+"question": "單詞 'surprise' 的中文意思是？",
+"options": ["A. 娛樂", "B. 失望", "C. 無聊", "D. 驚訝"],
+"correctAnswer": "D. 驚訝"
+},
+{
+"question": "單詞 'touch' 的中文意思是？（情感層面）",
+"options": ["A. 接觸", "B. 觸摸", "C. 觸動", "D. 感動"],
+"correctAnswer": "C. 觸動"
+},
+{
+"question": "單詞 'boredom' 的中文意思是？",
+"options": ["A. 驚訝", "B. 娛樂", "C. 失望", "D. 無聊"],
+"correctAnswer": "D. 無聊"
+},
+{
+"question": "單詞 'sale' 的中文意思是？（慈善場景）",
+"options": ["A. 購買", "B. 銷售", "C. 促銷", "D. 義賣"],
+"correctAnswer": "D. 義賣"
+},
+{
+"question": "單詞 'second-hand' 的中文意思是？",
+"options": ["A. 新的", "B. 舊的", "C. 二手的", "D. 破損的"],
+"correctAnswer": "C. 二手的"
+},
+{
+"question": "單詞 'raffle' 的中文意思是？",
+"options": ["A. 競賽", "B. 遊戲", "C. 活動", "D. 抽獎"],
+"correctAnswer": "D. 抽獎"
+},
+{
+"question": "單詞 'participate' 的中文意思是？",
+"options": ["A. 觀看", "B. 組織", "C. 參與", "D. 支持"],
+"correctAnswer": "C. 參與"
+},
+{
+"question": "單詞 'protect' 的中文意思是？",
+"options": ["A. 破壞", "B. 浪費", "C. 保護", "D. 利用"],
+"correctAnswer": "C. 保護"
+},
+{
+"question": "單詞 'preserve' 的中文意思是？",
+"options": ["A. 保存", "B. 節約", "C. 利用", "D. 保護"],
+"correctAnswer": "D. 保護"
+},
+{
+"question": "單詞 'conserve' 的中文意思是？",
+"options": ["A. 保護", "B. 利用", "C. 浪費", "D. 節約"],
+"correctAnswer": "D. 節約"
+},
+{
+"question": "單詞 'pollute' 的中文意思是？",
+"options": ["A. 清潔", "B. 保護", "C. 污染", "D. 利用"],
+"correctAnswer": "C. 污染"
+},
+{
+"question": "單詞 'damage' 的中文意思是？",
+"options": ["A. 保護", "B. 修復", "C. 建設", "D. 破壞"],
+"correctAnswer": "D. 破壞"
+},
+{
+"question": "單詞 'destroy' 的中文意思是？",
+"options": ["A. 建設", "B. 修復", "C. 保護", "D. 破壞"],
+"correctAnswer": "D. 破壞"
+},
+{
+"question": "單詞 'rebuild' 的中文意思是？",
+"options": ["A. 破壞", "B. 建設", "C. 修復", "D. 重建"],
+"correctAnswer": "D. 重建"
+},
+{
+"question": "單詞 'rescue' 的中文意思是？",
+"options": ["A. 幫助", "B. 支持", "C. 保護", "D. 救援"],
+"correctAnswer": "D. 救援"
+},
+{
+"question": "單詞 'survive' 的中文意思是？",
+"options": ["A. 生活", "B. 存在", "C. 活著", "D. 生存"],
+"correctAnswer": "D. 生存"
+},
+{
+"question": "單詞 'recover' 的中文意思是？",
+"options": ["A. 康復", "B. 修復", "C. 還原", "D. 恢復"],
+"correctAnswer": "D. 恢復"
+},
+{
+"question": "單詞 'amused' 的中文意思是？",
+"options": ["A. 令人驚訝的", "B. 令人無聊的", "C. 感到好笑的", "D. 感到失望的"],
+"correctAnswer": "C. 感到好笑的"
+},
+{
+"question": "單詞 'amazing' 的中文意思是？",
+"options": ["A. 感到驚訝的", "B. 感到無聊的", "C. 令人失望的", "D. 令人驚訝的"],
+"correctAnswer": "D. 令人驚訝的"
+},
+{
+"question": "單詞 'disappointed' 的中文意思是？",
+"options": ["A. 令人失望的", "B. 令人驚訝的", "C. 感到失望的", "D. 感到驚訝的"],
+"correctAnswer": "C. 感到失望的"
+},
+{
+"question": "單詞 'disappointing' 的中文意思是？",
+"options": ["A. 感到失望的", "B. 感到驚訝的", "C. 令人驚訝的", "D. 令人失望的"],
+"correctAnswer": "D. 令人失望的"
+},
+{
+"question": "單詞 'touched' 的中文意思是？",
+"options": ["A. 令人觸動的", "B. 令人無聊的", "C. 感到觸動的", "D. 感到無聊的"],
+"correctAnswer": "C. 感到觸動的"
+},
+{
+"question": "單詞 'touching' 的中文意思是？",
+"options": ["A. 感到觸動的", "B. 感到無聊的", "C. 令人無聊的", "D. 令人觸動的"],
+"correctAnswer": "D. 令人觸動的"
+},
+{
+"question": "單詞 'bored' 的中文意思是？",
+"options": ["A. 令人無聊的", "B. 令人失望的", "C. 感到無聊的", "D. 感到失望的"],
+"correctAnswer": "C. 感到無聊的"
+},
+{
+"question": "單詞 'boring' 的中文意思是？",
+"options": ["A. 感到無聊的", "B. 感到失望的", "C. 令人失望的", "D. 令人無聊的"],
+"correctAnswer": "D. 令人無聊的"
+}
+  ]
+
+};
+
+
+
+const bgThemes = [
+  "linear-gradient(180deg, #a8e0ff, #8ee3f5, #f9f9f9)",
+  "linear-gradient(180deg, #ffecd2, #fcb69f)",
+  "linear-gradient(180deg, #c9ffbf, #ffafbd)",
+  "linear-gradient(180deg, #f6d365, #fda085)",
+  "linear-gradient(180deg, #89f7fe, #66a6ff)",
+  "linear-gradient(180deg, #ff9a9e, #fecfef, #fe99a7)"
+];
+// DOM 元素選擇
+const $ = id => document.getElementById(id);
+let selectedCategories = new Set();
+let selectedQuestions = [];
+let current = 0, score = 0, wrongAnswers = [];
+// 工具函數
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function speakZh(t) {
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = "zh-HK";
+  u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
+function speakEn(t) {
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = "en-US";
+  u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
+function changeBackground() {
+  document.body.style.background = bgThemes[Math.floor(Math.random() * bgThemes.length)];
+}
+function showScreen(screenName) {
+  document.querySelectorAll('#game-container > div').forEach(div => {
+    div.classList.add('hidden');
+  });
+  $(screenName).classList.remove('hidden');
+}
+// 類別選擇功能
+function toggleCategory(categoryNumber) {
+  const checkbox = $(`category${categoryNumber}`);
+  const card = checkbox.parentElement;
+  
+  if (selectedCategories.has(categoryNumber)) {
+    selectedCategories.delete(categoryNumber);
+    card.classList.remove('selected');
+    checkbox.checked = false;
+  } else {
+    selectedCategories.add(categoryNumber);
+    card.classList.add('selected');
+    checkbox.checked = true;
+  }
+  
+  updateSelectionCount();
+  updateStartButton();
+}
+function updateSelectionCount() {
+  $('selected-count').textContent = selectedCategories.size;
+}
+function updateStartButton() {
+  $('start-quiz-btn').disabled = selectedCategories.size === 0;
+}
+// 開始測驗
+function startQuiz() {
+  if (selectedCategories.size === 0) return;
+  
+  // 從選擇的類別中收集所有題目
+  let allQuestions = [];
+  selectedCategories.forEach(cat => {
+    allQuestions = allQuestions.concat(quizQuestions[`category${cat}`]);
+  });
+  
+  // 隨機選擇10題
+  selectedQuestions = shuffle([...allQuestions]).slice(0, 10);
+  current = 0;
+  score = 0;
+  wrongAnswers = [];
+  
+  showScreen('quiz-screen');
+  showQuestion();
+}
+// 測驗功能
+function showQuestion() {
+  changeBackground();
+  const q = selectedQuestions[current];
+  $('question').textContent = q.question;
+  $('options').innerHTML = '';
+  
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = opt;
+    btn.onclick = () => checkAnswer(opt);
+    $('options').appendChild(btn);
+  });
+  
+  $('result').textContent = '';
+  $('next-btn').classList.add('hidden');
+  $('scoreboard').textContent = `進度：${current + 1}/${selectedQuestions.length}`;
+}
+function checkAnswer(selected) {
+  const q = selectedQuestions[current];
+  // 提取單詞（從問題中匹配 'xxx' 格式的內容）
+  const wordMatch = q.question.match(/'([^']+)'/);
+  const word = wordMatch ? wordMatch[1] : '該單詞';
+  // 提取正確答案的中文部分
+  const correctChinese = q.correctAnswer.split('. ')[1] || q.correctAnswer;
+  
+  if (selected === q.correctAnswer) {
+    score++;
+    $('result').textContent = '✅ 答啱左！';
+    speakZh('答啱左！');
+  } else {
+    $('result').textContent = `❌ 錯！正確答案係：${q.correctAnswer}`;
+    speakZh(`錯！正確答案係 ${correctChinese}`);
+    // 存儲完整的错题信息（對象格式）
+    wrongAnswers.push({
+      question: q.question,
+      word: word,
+      correctAnswer: q.correctAnswer,
+      correctChinese: correctChinese,
+      selectedAnswer: selected
+    });
+  }
+  $('next-btn').classList.remove('hidden');
+}
+// 事件監聽
+$('start-btn').onclick = () => showScreen('category-screen');
+$('start-quiz-btn').onclick = startQuiz;
+$('speak-word').onclick = () => {
+  const questionText = selectedQuestions[current].question;
+  const wordMatch = questionText.match(/'([^']+)'/);
+  if (wordMatch) speakEn(wordMatch[1]);
+};
+$('next-btn').onclick = () => {
+  speechSynthesis.cancel();
+  current++;
+  if (current < selectedQuestions.length) {
+    showQuestion();
+  } else {
+    endGame();
+  }
+};
+function endGame() {
+  showScreen('end-screen');
+  $('final-score').textContent = `🏆 你的最終分數：${score}/${selectedQuestions.length}`;
+  
+  if (wrongAnswers.length > 0) {
+    let wrongListHTML = '📝 錯題列表（單詞 = 正確中文意思）：<br><br>';
+    
+    wrongAnswers.forEach((item, index) => {
+      wrongListHTML += `${index + 1}. <strong>${item.word}</strong> = ${item.correctChinese}<br>`;
+    });
+    
+    $('wrong-list').innerHTML = wrongListHTML;
+  } else {
+    $('wrong-list').innerHTML = '🎯 全部答啱，太勁啦！';
+  }
+  
+  speakZh('俾心機，你下次一定可以拎滿分。');
+}
+// 初始化
+updateSelectionCount();
+</script>
+</body>
+</html>
